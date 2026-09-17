@@ -13,7 +13,7 @@
     "db:plan": "supabase db push --linked --dry-run --skip-vault",
     "db:push": "supabase db push --linked --skip-vault",
     "db:history": "supabase migration list --linked",
-    "db:types": "supabase gen types --linked --lang typescript --schema public",
+    "db:types": "supabase gen types --linked --lang typescript --schema public > src/lib/supabase/database.types.ts",
     "db:test:cloud": "node scripts/test-cloud-database.mjs"
   },
   "dependencies": {
