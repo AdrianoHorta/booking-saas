@@ -1,0 +1,2 @@
+-- Intencionalmente vazio: os testes criam fixtures dentro de uma transação.
+-- Os dados de demonstração serão adicionados numa fase própria.

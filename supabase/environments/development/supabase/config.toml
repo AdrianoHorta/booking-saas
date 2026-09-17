@@ -1,0 +1,5 @@
+# Apenas para booking-saas-dev. Não usar como configuração de produção.
+project_id = "booking-saas-dev"
+
+[auth.email]
+enable_confirmations = false

@@ -1,0 +1,51 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Segoe UI', 'Helvetica Neue', sans-serif;
+  --font-display: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+  --color-canvas: #faf6ef;
+  --color-surface: #fffcf7;
+  --color-ink: #35291f;
+  --color-muted: #766352;
+  --color-line: #dfd1c0;
+  --color-brand: #a34623;
+  --color-brand-hover: #833519;
+  --color-brand-soft: #f3e4d5;
+  --color-apricot: #edc5a0;
+}
+
+@layer base {
+  body {
+    margin: 0;
+    min-width: 320px;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-brand);
+    outline-offset: 4px;
+  }
+
+  ::selection {
+    background: var(--color-brand-soft);
+    color: var(--color-ink);
+  }
+}
+
+@layer components {
+  .editorial-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .agenda-art {
+    background: radial-gradient(ellipse at 75% 10%, #f5dcc0 0%, #edc5a0 45%, #dca579 100%);
+  }
+}
