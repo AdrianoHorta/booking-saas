@@ -36,7 +36,8 @@ export function useUpdateService(businessId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: updateService,
+    mutationFn: (input: Omit<Parameters<typeof updateService>[0], 'businessId'>) =>
+      updateService({ ...input, businessId }),
 
     onSuccess: async () => {
       await queryClient.invalidateQueries({

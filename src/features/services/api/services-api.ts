@@ -26,8 +26,8 @@ type CreateServiceInput = {
 }
 
 export async function createService(input: CreateServiceInput) {
-    const supabase = getSupabase()
-    const { data, error } = await supabase
+  const supabase = getSupabase()
+  const { data, error } = await supabase
     .from('services')
     .insert({
       business_id: input.businessId,
@@ -48,6 +48,7 @@ export async function createService(input: CreateServiceInput) {
 
 type UpdateServiceInput = {
   id: string
+  businessId: string
   name?: string
   description?: string | null
   durationMinutes?: number
@@ -56,7 +57,7 @@ type UpdateServiceInput = {
 }
 
 export async function updateService(input: UpdateServiceInput) {
-  const { id, ...changes } = input
+  const { id, businessId, ...changes } = input
 
   const updateData = {
     ...(changes.name !== undefined && { name: changes.name }),
@@ -75,10 +76,11 @@ export async function updateService(input: UpdateServiceInput) {
   }
 
   const supabase = getSupabase()
-    const { data, error } = await supabase
+  const { data, error } = await supabase
     .from('services')
     .update(updateData)
     .eq('id', id)
+    .eq('business_id', businessId)
     .select()
     .single()
 

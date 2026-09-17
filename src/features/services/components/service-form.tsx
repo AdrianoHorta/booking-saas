@@ -50,26 +50,30 @@ export function ServiceForm({
   });
 
   async function onSubmit(values: ServiceFormValues) {
-    if (service) {
-      await updateService.mutateAsync({
-        id: service.id,
-        name: values.name,
-        description: values.description || null,
-        durationMinutes: values.durationMinutes,
-        priceCents: Math.round(values.price * 100),
-      });
-    } else {
-      await createService.mutateAsync({
-        businessId,
-        name: values.name,
-        description: values.description,
-        durationMinutes: values.durationMinutes,
-        priceCents: Math.round(values.price * 100),
-      });
-    }
+    try {
+      if (service) {
+        await updateService.mutateAsync({
+          id: service.id,
+          name: values.name,
+          description: values.description || null,
+          durationMinutes: values.durationMinutes,
+          priceCents: Math.round(values.price * 100),
+        });
+      } else {
+        await createService.mutateAsync({
+          businessId,
+          name: values.name,
+          description: values.description,
+          durationMinutes: values.durationMinutes,
+          priceCents: Math.round(values.price * 100),
+        });
+      }
 
-    reset();
-    onSuccess?.();
+      reset();
+      onSuccess?.();
+    } catch {
+      // Os estados da mutation apresentam o erro e mantêm os dados para repetir.
+    }
   }
 
   return (

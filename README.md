@@ -8,9 +8,9 @@ por etapas com foco em arquitetura, segurança e aprendizagem.
 Frontend inicial concluído. Inclui página inicial, página sobre o projeto,
 navegação, página não encontrada, tema responsivo e componentes reutilizáveis.
 
-Fase 2A preparada: CLI Supabase, migrations de empresas/membros e testes RLS.
-O projeto booking-saas-dev está ligado na cloud, com duas migrations aplicadas,
-tipos gerados e 29 testes SQL aprovados. Este fluxo não precisa de Docker.
+Supabase ligado ao projeto booking-saas-dev na cloud, com migrations de
+empresas/membros, onboarding e services aplicadas, tipos gerados e 92 testes SQL
+aprovados. Este fluxo não precisa de Docker.
 
 Autenticação implementada: registo, login, recuperação de password, sessão e
 logout. No projeto dev, o registo permite sessão imediata sem confirmação de email;
@@ -19,6 +19,10 @@ no fim. Ver [modo de desenvolvimento](docs/development-auth.md).
 A recuperação por email continua a exigir validação manual e configuração SMTP.
 Reservas e demo ainda não estão implementadas.
 
+A Fase 5 — Services está concluída na validação automatizada: catálogo, criação,
+edição e ativação/desativação, com testes RLS na cloud. Ver o [fecho da Fase 5](docs/phase-5.md)
+para resultados e limites da validação.
+
 ## Stack atual
 
 - React e TypeScript com modo strict.
@@ -26,7 +30,8 @@ Reservas e demo ainda não estão implementadas.
 - React Router para navegação.
 - Oxlint para análise estática.
 
-Supabase e Vercel fazem parte da arquitetura planeada.
+Supabase Cloud suporta Auth, PostgreSQL e RLS. O acesso a dados usa TanStack
+Query; os formulários usam React Hook Form e Zod. Deploy Vercel fica para uma fase posterior.
 
 A CLI Supabase está instalada como dependência de desenvolvimento com versão fixa.
 
@@ -93,14 +98,31 @@ Dashboard, os testes realizados e o percurso manual com emails reais.
 
 ## Roadmap
 
-- [x] Base do frontend e navegação pública.
-- [ ] Supabase, migrations e isolamento multiempresa.
-- [ ] Autenticação e criação de empresas.
-- [ ] Serviços, colaboradores e horários.
-- [ ] Disponibilidade e reservas sem sobreposições.
-- [ ] Dashboard, gestão, realtime e indicadores.
-- [ ] Demo, testes de integração e acabamento visual.
-- [ ] Deploy, screenshots e apresentação final do portefólio.
+- [x] Fase 1 — Base do frontend e navegação pública.
+- [x] Fase 2 — Supabase, migrations e isolamento multiempresa.
+- [x] Fase 3 — Autenticação (validação de recuperação por email ainda pendente).
+- [x] Fase 4 — Criação de empresas e memberships.
+- [x] Fase 5 — Services; [validação e fecho](docs/phase-5.md).
+- [ ] Fase 6 — Employees.
+- [ ] Fase 7 — Working hours / schedules.
+- [ ] Fase 8 — Availability engine.
+- [ ] Fase 9 — Public booking flow.
+- [ ] Fase 10 — Dashboard.
+- [ ] Fase 11 — Booking management.
+- [ ] Fase 12 — Realtime.
+- [ ] Fase 12.x A — Google OAuth/calendar connection por employee.
+- [ ] Fase 12.x B — SaaS → Google event sync.
+- [ ] Fase 12.x C — Update/cancel sync.
+- [ ] Fase 12.x D — Mais tarde: Google busy time → availability engine.
+- [ ] Analytics.
+- [ ] Demo mode.
+- [ ] Testes de integração/E2E completos (testes acompanham também cada fase).
+- [ ] Polish.
+- [ ] Deploy.
+- [ ] README, screenshots e apresentação do portefólio.
+
+O [design Google Calendar](docs/google-calendar-architecture.md) define os contratos
+para employees, schedules, availability e bookings. Não há implementação Calendar nesta etapa.
 
 ## Segurança
 

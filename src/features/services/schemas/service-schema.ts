@@ -16,11 +16,13 @@ export const serviceSchema = z.object({
   durationMinutes: z
     .number()
     .int('A duração tem de ser um número inteiro.')
-    .positive('A duração tem de ser superior a 0.'),
+    .positive('A duração tem de ser superior a 0.')
+    .max(2147483647, 'A duração é demasiado longa.'),
 
   price: z
     .number()
-    .nonnegative('O preço não pode ser negativo.'),
+    .nonnegative('O preço não pode ser negativo.')
+    .max(21474836.47, 'O preço é demasiado elevado.'),
 })
 
 export type ServiceFormValues = z.infer<typeof serviceSchema>

@@ -3,15 +3,23 @@ import { PageHeading } from "../../../components/ui/page-heading";
 import { Message } from "../../../components/feedback/message";
 import { Button } from "../../../components/ui/button";
 import { useState } from "react";
+import { ServiceDialog } from "../components/service-dialog";
 import { ServiceForm } from "../components/service-form";
 import { useServices, useUpdateService } from "../hooks/use-services";
+import { useBusiness } from "../../businesses/hooks/use-businesses";
+import { businessIdSchema } from "../../businesses/schemas/business-schema";
 
 export function ServicesPage() {
   const { businessId = "" } = useParams();
+  return <ServicesCatalog key={businessId} businessId={businessId} />;
+}
+
+function ServicesCatalog({ businessId }: { businessId: string }) {
+  const businessQuery = useBusiness(businessId);
+  const canManage = businessQuery.data?.role === "owner" || businessQuery.data?.role === "admin";
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [updatingServiceId, setUpdatingServiceId] = useState<string | null>(
-    null,
-  );
+  const [updatingServiceIds, setUpdatingServiceIds] = useState<Set<string>>(() => new Set());
+  const [updateError, setUpdateError] = useState<string | null>(null);
   type Service = {
     id: string;
     name: string;
@@ -34,6 +42,17 @@ export function ServicesPage() {
     </Link>
   );
 
+  if (!businessIdSchema.safeParse(businessId).success ||
+      (!businessQuery.isPending && !businessQuery.isError && !businessQuery.data)) {
+    return <Message>Esta empresa não está disponível para a sua conta.</Message>;
+  }
+  if (businessQuery.isPending) return <Message>A carregar a empresa…</Message>;
+  if (businessQuery.isError) return <div className="space-y-4">
+    <Message error>Não foi possível carregar a empresa.</Message>
+    <Button onClick={() => void businessQuery.refetch()}>Tentar novamente</Button>
+    {backLink}
+  </div>;
+
   return (
     <div className="space-y-10">
       <div className="flex flex-wrap items-center justify-between gap-5">
@@ -49,10 +68,11 @@ export function ServicesPage() {
           description="Defina os serviços disponíveis, a duração de cada marcação e o respetivo preço."
         />
 
-        <Button onClick={() => setIsCreateOpen(true)}>Adicionar serviço</Button>
+        {canManage && <Button onClick={() => setIsCreateOpen(true)}>Adicionar serviço</Button>}
       </div>
 
       <section className="space-y-6">
+        {updateError && <Message error>{updateError}</Message>}
         <div>
           <h2 className="font-display text-3xl">Catálogo atual</h2>
 
@@ -123,40 +143,44 @@ export function ServicesPage() {
                   </dl>
                 </div>
 
-                <div className="mt-8 flex flex-wrap gap-3 border-t border-line pt-5">
+                {canManage && <div className="mt-8 flex flex-wrap gap-3 border-t border-line pt-5">
                   <Button onClick={() => setEditingService(service)}>
                     Editar
                   </Button>
 
                   <Button
-                    disabled={updatingServiceId === service.id}
-                    onClick={() => {
-                      setUpdatingServiceId(service.id);
-
-                      updateService.mutate(
+                    disabled={updatingServiceIds.has(service.id)}
+                    onClick={async () => {
+                      setUpdatingServiceIds((ids) => new Set(ids).add(service.id));
+                      setUpdateError(null);
+                      try {
+                      await updateService.mutateAsync(
                         {
                           id: service.id,
                           isActive: !service.is_active,
                         },
-                        {
-                          onSettled: () => {
-                            setUpdatingServiceId(null);
-                          },
-                        },
                       );
+                      } catch {
+                        setUpdateError(`Não foi possível alterar o estado de ${service.name}. Tente novamente.`);
+                      } finally {
+                        setUpdatingServiceIds((ids) => {
+                          const remaining = new Set(ids);
+                          remaining.delete(service.id);
+                          return remaining;
+                        });
+                      }
                     }}
                   >
                     {service.is_active ? "Desativar" : "Ativar"}
                   </Button>
-                </div>
+                </div>}
               </article>
             ))}
           </div>
         )}
       </section>
-      {isCreateOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4 backdrop-blur-sm">
-          <div className="relative w-full max-w-xl rounded-[3px] border border-line bg-white p-8 shadow-[0_24px_80px_rgba(60,35,20,0.18)] sm:p-10">
+      {canManage && isCreateOpen && (
+        <ServiceDialog label="Adicionar serviço" onClose={() => setIsCreateOpen(false)}>
             <button
               type="button"
               onClick={() => setIsCreateOpen(false)}
@@ -183,12 +207,10 @@ export function ServicesPage() {
               onClose={() => setIsCreateOpen(false)}
               onSuccess={() => setIsCreateOpen(false)}
             />
-          </div>
-        </div>
+        </ServiceDialog>
       )}
-      {editingService && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-[2px]">
-          <div className="relative w-full max-w-xl rounded-[3px] border border-line bg-white p-8 shadow-[0_24px_80px_rgba(60,35,20,0.18)] sm:p-10">
+      {canManage && editingService && (
+        <ServiceDialog label="Editar serviço" onClose={() => setEditingService(null)}>
             <button
               type="button"
               onClick={() => setEditingService(null)}
@@ -216,8 +238,7 @@ export function ServicesPage() {
                 onSuccess={() => setEditingService(null)}
               />
             </div>
-          </div>
-        </div>
+        </ServiceDialog>
       )}
     </div>
   );

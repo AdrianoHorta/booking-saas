@@ -92,7 +92,7 @@ Estes valores são exemplos. Nunca usar secret key, service_role, password da ba
 ou access token da CLI. O frontend usa estas variáveis no cliente tipado de
 autenticação. Reiniciar Vite após alterar o ficheiro.
 
-Após aplicar migrations, `npm run db:types` apresenta os tipos no terminal.
+Após aplicar migrations, `npm run db:types` grava os tipos em `src/lib/supabase/database.types.ts`.
 O resultado atual já foi guardado em `src/lib/supabase/database.types.ts`,
 após confirmar que a geração terminou com sucesso.
 
