@@ -9,7 +9,7 @@ Frontend inicial concluído. Inclui página inicial, página sobre o projeto,
 navegação, página não encontrada, tema responsivo e componentes reutilizáveis.
 
 Supabase ligado ao projeto booking-saas-dev na cloud, com migrations de
-empresas/membros, onboarding e services aplicadas, tipos gerados e 92 testes SQL
+empresas/membros, onboarding, services, employees, horários, disponibilidade, confirmação de reservas, catálogo, disponibilidade públicos, controlo de publicação e gestão de membros aplicadas, tipos gerados e 554 testes SQL
 aprovados. Este fluxo não precisa de Docker.
 
 Autenticação implementada: registo, login, recuperação de password, sessão e
@@ -17,7 +17,16 @@ logout. No projeto dev, o registo permite sessão imediata sem confirmação de 
 registo e login foram verificados contra a cloud com uma conta temporária removida
 no fim. Ver [modo de desenvolvimento](docs/development-auth.md).
 A recuperação por email continua a exigir validação manual e configuração SMTP.
-Reservas e demo ainda não estão implementadas.
+A confirmação de reservas no servidor está criada e testada com concorrência. Owner/admin podem gerir a publicação e abrir `/book/:slug` na página da empresa. O formulário público inclui seleção, contactos, revisão, confirmação e recuperação de pedidos incertos. O percurso manual completo no browser contra a cloud e a demo continuam pendentes.
+
+A secção Acesso à empresa permite adicionar contas registadas pelo email, gerir
+permissões e retirar acesso sem apagar profissionais ou reservas. O formulário
+de colaboradores identifica as contas pelo email. Ver o [roteiro de associação
+do Miguel e demonstração](docs/members-and-demo.md). Suite frontend/API: 199 testes.
+
+Já existe consulta privada de reservas em `/dashboard/:businessId/reservations`:
+employee vê a sua agenda; owner/admin veem as reservas da empresa. Inclui contactos,
+filtros de datas/estado e paginação. Ver [fase 10](docs/phase-10.md).
 
 A Fase 5 — Services está concluída na validação automatizada: catálogo, criação,
 edição e ativação/desativação, com testes RLS na cloud. Ver o [fecho da Fase 5](docs/phase-5.md)
@@ -103,11 +112,11 @@ Dashboard, os testes realizados e o percurso manual com emails reais.
 - [x] Fase 3 — Autenticação (validação de recuperação por email ainda pendente).
 - [x] Fase 4 — Criação de empresas e memberships.
 - [x] Fase 5 — Services; [validação e fecho](docs/phase-5.md).
-- [ ] Fase 6 — Employees.
-- [ ] Fase 7 — Working hours / schedules.
-- [ ] Fase 8 — Availability engine.
-- [ ] Fase 9 — Public booking flow.
-- [ ] Fase 10 — Dashboard.
+- [x] Fase 6 — Employees: gestão e validação automatizada; [detalhes](docs/phase-6.md).
+- [x] Fase 7 — Working hours / schedules: gestão e validação automatizada; [detalhes](docs/phase-7.md).
+- [x] Fase 8 — Availability engine e consulta privada; [validação e limites](docs/phase-8.md).
+- [x] Fase 9 — Public booking flow implementado e validado automaticamente; percurso manual cloud pendente. Ver [detalhes](docs/phase-9.md).
+- [ ] Fase 10 — Dashboard: consulta privada de reservas implementada; resumo pendente.
 - [ ] Fase 11 — Booking management.
 - [ ] Fase 12 — Realtime.
 - [ ] Fase 12.x A — Google OAuth/calendar connection por employee.

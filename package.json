@@ -14,10 +14,12 @@
     "db:push": "supabase db push --linked --skip-vault",
     "db:history": "supabase migration list --linked",
     "db:types": "supabase gen types --linked --lang typescript --schema public > src/lib/supabase/database.types.ts",
-    "db:test:cloud": "node scripts/test-cloud-database.mjs"
+    "db:test:cloud": "node scripts/test-cloud-database.mjs",
+    "db:test:concurrency": "node scripts/test-booking-concurrency.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
+    "@js-temporal/polyfill": "^0.5.1",
     "@supabase/supabase-js": "^2.116.0",
     "@tanstack/react-query": "^5.103.1",
     "react": "^19.2.8",

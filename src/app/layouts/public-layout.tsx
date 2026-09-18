@@ -21,7 +21,7 @@ export function PublicLayout() {
   const previousPath = useRef(pathname)
 
   useEffect(() => {
-    const title = pageTitles[pathname.replace(/\/$/, '') || '/'] ?? (pathname.startsWith('/dashboard/') ? 'Empresa' : 'Página não encontrada')
+    const title = pageTitles[pathname.replace(/\/$/, '') || '/'] ?? (pathname.startsWith('/dashboard/') ? 'Empresa' : pathname.startsWith('/book/') ? 'Reservar' : 'Página não encontrada')
     document.title = `${title} · Booking SaaS`
     if (previousPath.current !== pathname) {
       mainRef.current?.focus({ preventScroll: true })

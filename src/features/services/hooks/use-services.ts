@@ -28,6 +28,7 @@ export function useCreateService(businessId: string) {
       await queryClient.invalidateQueries({
         queryKey: ['services', businessId],
       })
+      await queryClient.invalidateQueries({ queryKey: ['availability', businessId] })
     },
   })
 }
@@ -43,6 +44,7 @@ export function useUpdateService(businessId: string) {
       await queryClient.invalidateQueries({
         queryKey: ['services', businessId],
       })
+      await queryClient.invalidateQueries({ queryKey: ['availability', businessId] })
     },
   })
 }

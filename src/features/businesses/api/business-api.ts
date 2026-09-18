@@ -1,8 +1,21 @@
+import { z } from 'zod'
 import { getSupabase } from '../../../lib/supabase/client'
+import { businessIdSchema } from '../schemas/business-schema'
 import type { BusinessSummary } from '../business.types'
 import type { BusinessFormValues } from '../schemas/business-schema'
 
-const membershipSelection = 'role,business:businesses!inner(id,name,slug,timezone,is_active)' as const
+const membershipSelection = 'role,business:businesses!inner(id,name,slug,timezone,is_active,public_booking_enabled)' as const
+
+export async function setPublicBookingEnabled(input: { businessId: string; enabled: boolean }) {
+  const request = z.object({ businessId: businessIdSchema, enabled: z.boolean() }).parse(input)
+  const { data, error } = await getSupabase().rpc('set_public_booking_enabled', {
+    target_business_id: request.businessId, enabled: request.enabled,
+  })
+  if (error?.code === '42501') throw new Error('Não tem permissão para alterar a publicação desta empresa.')
+  if (error?.code === '22023') throw new Error('Uma empresa inativa não pode ativar reservas públicas.')
+  if (error) throw new Error('Não foi possível guardar a publicação. Verifique a ligação e tente novamente.')
+  return z.boolean().parse(data)
+}
 
 export async function listBusinesses(userId: string, signal: AbortSignal): Promise<BusinessSummary[]> {
   const { data, error } = await getSupabase().from('business_members')

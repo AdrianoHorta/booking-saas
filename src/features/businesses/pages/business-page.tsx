@@ -6,6 +6,8 @@ import { SignOutButton } from "../../auth/components/sign-out-button";
 import { useBusiness } from "../hooks/use-businesses";
 import { businessIdSchema } from "../schemas/business-schema";
 import { businessRoleLabels } from "../business.types";
+import { PublicBookingSettings } from "../components/public-booking-settings";
+import { BusinessMembers } from "../components/business-members";
 
 export function BusinessPage() {
   const { businessId = "" } = useParams();
@@ -69,14 +71,17 @@ export function BusinessPage() {
         title={business.name}
         description="Este é o espaço da sua empresa. Aqui reuniremos os serviços, a equipa e a agenda."
       />
-      <dl className="grid gap-7 border-y border-line py-7 sm:grid-cols-3">
+      <section className="max-w-xl space-y-4">
+        <h2 className="font-display text-3xl">{business.role === 'employee' ? 'As suas marcações.' : 'As marcações da empresa.'}</h2>
+        <p className="text-muted">Consulte horários, serviços e contactos dos clientes.</p>
+        <Link to={`/dashboard/${business.id}/reservations`} className="inline-flex text-sm font-medium text-brand underline underline-offset-4">
+          {business.role === 'employee' ? 'As minhas reservas' : 'Ver reservas da empresa'}
+        </Link>
+      </section>
+      <dl className="grid gap-7 border-y border-line py-7 sm:grid-cols-2">
         <div>
           <dt className="text-sm text-muted">Identificador</dt>
           <dd className="mt-2 break-all font-medium">{business.slug}</dd>
-        </div>
-        <div>
-          <dt className="text-sm text-muted">Fuso horário</dt>
-          <dd className="mt-2 font-medium">{business.timezone}</dd>
         </div>
         <div>
           <dt className="text-sm text-muted">Estado</dt>
@@ -105,6 +110,20 @@ export function BusinessPage() {
           </Link>
         </div>
       </section>
+      <section className="max-w-xl">
+        <h2 className="font-display text-3xl">As pessoas por trás do seu negócio.</h2>
+        <p className="mt-4 leading-relaxed text-muted">Organize os colaboradores e associe os serviços que cada profissional realiza.</p>
+        <Link to={`/dashboard/${business.id}/employees`} className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-brand underline underline-offset-4">
+          Gerir colaboradores <span aria-hidden="true">↗</span>
+        </Link>
+      </section>
+      <section className="max-w-xl">
+        <h2 className="font-display text-3xl">Encontre um lugar na agenda.</h2>
+        <p className="mt-4 leading-relaxed text-muted">Consulte as vagas por serviço, profissional e data.</p>
+        <Link to={`/dashboard/${business.id}/availability`} className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-brand underline underline-offset-4">Consultar disponibilidade <span aria-hidden="true">↗</span></Link>
+      </section>
+      <BusinessMembers key={`members-${business.id}`} business={business} />
+      <PublicBookingSettings key={business.id} business={business} />
       <SignOutButton />
     </div>
   );
