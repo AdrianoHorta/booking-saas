@@ -1,9 +1,6 @@
-import { StrictMode } from 'react'
+import { StrictMode, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router'
-import { AppRouter } from './app/router'
-import { AuthProvider } from './features/auth/auth-provider'
-import { QueryProvider } from './app/query-provider'
+import Application from './app/application'
 import './styles/globals.css'
 
 const rootElement = document.getElementById('root')
@@ -14,12 +11,6 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <QueryProvider>
-          <AppRouter />
-        </QueryProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <Suspense fallback={<p role="status" className="p-8">A preparar a aplicação…</p>}><Application /></Suspense>
   </StrictMode>,
 )

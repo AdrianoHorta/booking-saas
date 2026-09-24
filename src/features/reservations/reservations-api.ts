@@ -3,6 +3,15 @@ import { getSupabase } from '../../lib/supabase/client'
 import { dayBounds, parseLocalDate } from '../availability/expand-working-hours'
 
 export const PAGE_SIZE = 25
+export async function cancelReservation(businessId: string, bookingId: string) {
+  const { data, error } = await getSupabase().rpc('cancel_booking', {
+    target_business_id: z.uuid().parse(businessId), target_booking_id: z.uuid().parse(bookingId),
+  })
+  if (error?.code === '42501') throw new Error('Não tem permissão para cancelar esta reserva, ou a reserva já não está disponível.')
+  if (error?.code === '22023') throw new Error('O prazo de cancelamento desta reserva terminou.')
+  if (error) throw new Error('Não foi possível confirmar o cancelamento. Pode repetir o pedido ou atualizar as reservas para verificar o estado.')
+  return z.object({ id: z.uuid(), status: z.literal('cancelled'), cancelled_at: z.string().nullable() }).parse(data)
+}
 export type ReservationFilters = { businessId: string; timezone: string; from: string; to: string; status: 'all' | 'confirmed' | 'cancelled'; page: number; employeeId?: string }
 export function reservationBounds(input: ReservationFilters) {
   z.uuid().parse(input.businessId)
@@ -18,7 +27,7 @@ export function reservationBounds(input: ReservationFilters) {
 export async function getReservations(input: ReservationFilters, signal: AbortSignal) {
   const bounds = reservationBounds(input)
   let query = getSupabase().from('bookings')
-    .select('id,starts_at,ends_at,status,service_name,employee_name,duration_minutes,price_cents,currency,customer:customers!bookings_customer_fkey(name,email,phone)')
+    .select('id,starts_at,ends_at,status,service_name,employee_name,duration_minutes,price_cents,currency,cancellation_notice_hours,customer:customers!bookings_customer_fkey(name,email,phone)')
     .eq('business_id', input.businessId).lt('starts_at', bounds.end).gt('ends_at', bounds.start)
     .order('starts_at').order('id')
   if (input.status !== 'all') query = query.eq('status', input.status)

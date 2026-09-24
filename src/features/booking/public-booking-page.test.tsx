@@ -11,6 +11,7 @@ vi.mock('../availability/api/public-availability-api', () => ({ getPublicAvailab
 const employeeId = '63000000-0000-4000-8000-000000000001'
 const serviceId = '64000000-0000-4000-8000-000000000001'
 const receipt = { id: '66000000-0000-4000-8000-000000000001', status: 'confirmed', starts_at: '2099-01-05T09:00:00Z', ends_at: '2099-01-05T09:30:00Z',
+  cancellation_token: 'a'.repeat(64), cancellation_notice_hours: 12, cancellation_deadline: '2099-01-04T21:00:00Z',
   service_name: 'Corte', employee_name: 'Maria', duration_minutes: 30, price_cents: 1500, currency: 'EUR' }
 function setup() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } })
@@ -20,7 +21,7 @@ function setup() {
 }
 beforeEach(() => {
   vi.resetAllMocks(); sessionStorage.clear()
-  mocks.catalog.mockResolvedValue({ business: { name: 'Salão Ana', slug: 'salao-ana', timezone: 'Europe/Lisbon' },
+  mocks.catalog.mockResolvedValue({ business: { name: 'Salão Ana', slug: 'salao-ana', timezone: 'Europe/Lisbon', cancellation_notice_hours: 12 },
     services: [{ id: serviceId, name: 'Corte', duration_minutes: 30, price_cents: 1500, currency: 'EUR', employees: [{ id: employeeId, name: 'Maria' }] }] })
   mocks.availability.mockResolvedValue({ slots: [{ start: Date.parse(receipt.starts_at), end: Date.parse(receipt.ends_at) }] })
   mocks.confirm.mockResolvedValue(receipt)
@@ -48,6 +49,7 @@ it('percurso sem login: escolhe, revê e só anuncia sucesso após resposta', as
   expect(loadPendingBooking('salao-ana')).not.toBeNull()
   await act(async () => finish(receipt))
   await screen.findByText('Reserva confirmada.')
+  expect(screen.getByRole('link').getAttribute('href')).toBe(`/booking/manage/${receipt.id}#token=${receipt.cancellation_token}`)
   expect(loadPendingBooking('salao-ana')).toBeNull()
 })
 it('resultado incerto mantém pedido e contactos, sem permitir outra submissão diferente', async () => {

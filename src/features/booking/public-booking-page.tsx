@@ -68,6 +68,12 @@ function BookingFlow({ slug }: { slug: string }) {
       <div><dt>Referência</dt><dd className="break-all">{receipt.id}</dd></div>
     </dl>
     <p className="text-sm text-muted">Não foi enviado email de confirmação. Guarde os dados apresentados nesta página.</p>
+    {receipt.cancellation_token && <div className="space-y-3">
+      <p>Guarde a ligação privada abaixo para consultar ou cancelar a reserva. O prazo é de {receipt.cancellation_notice_hours} horas antes da marcação.</p>
+      <a className="block break-all text-sm text-brand underline" href={`/booking/manage/${receipt.id}#token=${receipt.cancellation_token}`}>
+        {`${window.location.origin}/booking/manage/${receipt.id}#token=${receipt.cancellation_token}`}
+      </a>
+    </div>}
   </div>
   if (pending) return <div className="max-w-2xl space-y-6">
     <PageHeading eyebrow="A sua marcação" title={sending ? 'A confirmar a reserva…' : 'Verificar o pedido anterior.'}
@@ -111,6 +117,7 @@ function BookingForm({ catalog, onSubmit }: { catalog: BookingCatalog; onSubmit:
       {review.contacts.phone && <div><dt>Telefone</dt><dd>{review.contacts.phone}</dd></div>}
     </dl>
     <p className="text-sm text-muted">A vaga só fica reservada após a confirmação. Os contactos serão partilhados com a empresa para gerir a marcação.</p>
+    <p className="text-sm">Pode cancelar pela ligação privada até {catalog.business.cancellation_notice_hours} horas antes da marcação.</p>
     <div className="flex flex-wrap gap-3"><Button onClick={() => onSubmit(review)}>Confirmar reserva</Button>
       <Button onClick={() => setReview(null)}>Editar dados</Button></div>
   </section>

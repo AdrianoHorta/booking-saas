@@ -3,6 +3,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { PublicBookingSettings } from './public-booking-settings'
+vi.mock('./cancellation-settings', () => ({ CancellationSettings: () => null }))
 import { useBusiness } from '../hooks/use-businesses'
 import type { BusinessSummary } from '../business.types'
 

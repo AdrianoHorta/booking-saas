@@ -8,6 +8,8 @@ import { businessIdSchema } from "../schemas/business-schema";
 import { businessRoleLabels } from "../business.types";
 import { PublicBookingSettings } from "../components/public-booking-settings";
 import { BusinessMembers } from "../components/business-members";
+import { ReservationSummary } from "../../reservations/reservation-summary";
+import { CalendarSettings } from '../../calendar/calendar-settings';
 
 export function BusinessPage() {
   const { businessId = "" } = useParams();
@@ -69,15 +71,10 @@ export function BusinessPage() {
       <PageHeading
         eyebrow="O seu negócio"
         title={business.name}
-        description="Este é o espaço da sua empresa. Aqui reuniremos os serviços, a equipa e a agenda."
+        description="Consulte a agenda e organize os serviços e a equipa da sua empresa."
       />
-      <section className="max-w-xl space-y-4">
-        <h2 className="font-display text-3xl">{business.role === 'employee' ? 'As suas marcações.' : 'As marcações da empresa.'}</h2>
-        <p className="text-muted">Consulte horários, serviços e contactos dos clientes.</p>
-        <Link to={`/dashboard/${business.id}/reservations`} className="inline-flex text-sm font-medium text-brand underline underline-offset-4">
-          {business.role === 'employee' ? 'As minhas reservas' : 'Ver reservas da empresa'}
-        </Link>
-      </section>
+      <ReservationSummary key={`summary-${business.id}`} business={business} />
+      <CalendarSettings key={`calendar-${business.id}`} businessId={business.id} />
       <dl className="grid gap-7 border-y border-line py-7 sm:grid-cols-2">
         <div>
           <dt className="text-sm text-muted">Identificador</dt>

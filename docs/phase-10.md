@@ -1,4 +1,4 @@
-# Fase 10 — Consulta privada de reservas
+# Fase 10 — Consulta privada e resumo de reservas
 
 ## OBJECTIVE
 
@@ -104,5 +104,35 @@ Snapshots preservam o que foi reservado mesmo após alterações no catálogo.
 ## NEXT STEP
 
 Validar o ciclo completo no browser. Depois acrescentar gestão/cancelamento de
-reservas com revalidação no servidor. Dashboard resumido, Realtime, notificações
-e integração Calendar continuam pendentes; esta etapa é a consulta da agenda.
+reservas com revalidação no servidor. Realtime, notificações e integração Calendar
+continuam pendentes.
+
+## Resumo na página da empresa
+
+A página `/dashboard/:businessId` inclui contagens de reservas confirmadas de hoje
+e de sete dias de calendário, incluindo hoje. Conta pela data de início, no fuso
+da empresa; reservas iniciadas na véspera não entram na contagem de hoje. Os dias
+respeitam as mudanças da hora. As contagens usam `count: exact` com `head: true`,
+sem depender da paginação ou do limite de linhas devolvidas pela API.
+
+A lista mostra até cinco reservas confirmadas com início a partir do instante da
+consulta e antes da meia-noite que termina o período. Ordena por início e ID.
+Não inclui reservas já iniciadas. A ligação para a agenda dá acesso à consulta
+detalhada. Não são pedidos contactos de clientes no resumo.
+
+Todas as consultas usam as policies existentes: gestores veem a empresa e employees
+apenas as reservas do profissional associado. Sem associação, a interface explica
+como resolver e não pede o resumo. Não foi necessária migration.
+
+A cache distingue conta, empresa, papel, fuso e associação ao profissional. O resumo
+atualiza a cada minuto enquanto a página está ativa e pelo botão Atualizar resumo.
+Esta atualização periódica não é Realtime. Contagens e lista são pedidos separados,
+pelo que uma reserva confirmada durante a leitura pode refletir-se apenas numa parte
+do resumo até à atualização seguinte. Falhas aparecem como erro, nunca como zero.
+
+Testes novos cobrem limites locais/DST, contagens acima de mil reservas, filtros,
+erros de leitura, gestores, colaboradores associados e ausência de associação.
+Validação deste incremento: 209 testes frontend/API aprovados (10 novos), lint e
+build aprovados. Não foram reexecutados testes SQL nem alterados dados na cloud.
+O percurso completo no browser contra a cloud continua pendente; esta sessão não
+dispunha de ferramenta para controlar o navegador.

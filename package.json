@@ -8,6 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "test": "vitest run",
+    "test:e2e": "tsc -p e2e/tsconfig.json && playwright test",
+    "test:e2e:report": "playwright show-report",
     "preview": "vite preview",
     "db:login": "supabase login",
     "db:plan": "supabase db push --linked --dry-run --skip-vault",
@@ -29,6 +31,8 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/react": "^16.3.3",
     "@types/node": "^24.13.3",

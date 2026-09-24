@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { CancelReservation } from './cancel-reservation'
+import { RescheduleReservation } from './reschedule-reservation'
 import { Temporal } from '@js-temporal/polyfill'
 import { Link, useParams } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
@@ -69,7 +71,7 @@ function ReservationsContent({ business }: { business: BusinessSummary }) {
               </select></label>
             </div>
             <Button disabled={Boolean(validation) || query.isFetching} onClick={() => void query.refetch()}>{query.isFetching ? 'A atualizar…' : 'Atualizar reservas'}</Button>
-            {validation ? <Message error>{validation}</Message> : query.isFetching || query.isPending ? <Message>A carregar reservas…</Message>
+            {validation ? <Message error>{validation}</Message> : query.isPending ? <Message>A carregar reservas…</Message>
               : query.isError ? <Message error>{query.error.message}</Message>
                 : query.data.reservations.length === 0 ? <Message>Não existem reservas para este período e estado.</Message>
                   : <ul aria-label="Reservas" className="grid items-start gap-4 lg:grid-cols-2">{query.data.reservations.map((booking) => <li key={booking.id} className="space-y-3 rounded-sm border border-line bg-surface p-4">
@@ -89,6 +91,10 @@ function ReservationsContent({ business }: { business: BusinessSummary }) {
                       <details className="min-w-0 text-xs text-muted"><summary className="cursor-pointer">Referência</summary><p className="mt-2 break-all">{booking.id}</p></details>
                       <p className="shrink-0 text-2xl font-semibold text-brand"><span className="sr-only">Preço: </span>{new Intl.NumberFormat('pt-PT', { style: 'currency', currency: booking.currency }).format(booking.price_cents / 100)}</p>
                     </div>
+                    {booking.status === 'confirmed' && <>
+                      <RescheduleReservation businessId={business.id} bookingId={booking.id} startsAt={booking.starts_at} timezone={business.timezone} />
+                      <CancelReservation businessId={business.id} bookingId={booking.id} serviceName={booking.service_name} startsAt={booking.starts_at} noticeHours={booking.cancellation_notice_hours} />
+                    </>}
                   </li>)}</ul>}
             {!validation && !query.isError && <nav aria-label="Páginas de reservas" className="flex flex-wrap items-center gap-4">
               <Button disabled={page === 0 || query.isFetching} onClick={() => setPage((current) => current - 1)}>Anterior</Button>

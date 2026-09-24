@@ -6,6 +6,7 @@ vi.mock('../../lib/supabase/client', () => ({ getSupabase: () => ({ rpc }) }))
 const request: BookingRequest = { slug: 'salao-ana', employeeId: '63000000-0000-4000-8000-000000000001', serviceId: '64000000-0000-4000-8000-000000000001',
   startsAt: '2099-01-05T09:00:00Z', requestKey: '65000000-0000-4000-8000-000000000001', contacts: { name: ' Ana ', email: ' ANA@example.test ', phone: '' } }
 const receipt = { id: '66000000-0000-4000-8000-000000000001', status: 'confirmed', starts_at: request.startsAt, ends_at: '2099-01-05T09:30:00Z',
+  cancellation_token: 'a'.repeat(64), cancellation_notice_hours: 12, cancellation_deadline: '2099-01-04T21:00:00Z',
   service_name: 'Corte', employee_name: 'Maria', duration_minutes: 30, price_cents: 1500, currency: 'EUR' }
 beforeEach(() => { vi.resetAllMocks(); sessionStorage.clear() })
 it('envia contactos normalizados e chave, sem aceitar preço ou duração do browser', async () => {

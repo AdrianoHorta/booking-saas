@@ -14,7 +14,8 @@ export const supabase = supabaseEnv
         flowType: 'implicit',
         persistSession: true,
         autoRefreshToken: true,
-        detectSessionInUrl: true,
+        // Calendar authorization codes belong to Google, not Supabase Auth.
+        detectSessionInUrl: initialUrl.pathname !== '/calendar/callback',
       },
     })
   : null

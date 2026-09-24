@@ -1,6 +1,7 @@
 import { lazy } from "react";
 import { Route, Routes } from "react-router";
 import { PublicLayout } from "./layouts/public-layout";
+import { BusinessLayout } from './layouts/business-layout';
 import { HomePage } from "../features/home/pages/home-page";
 import { ProjectPage } from "../features/home/pages/project-page";
 import { NotFoundPage } from "../components/feedback/not-found-page";
@@ -71,6 +72,9 @@ const ReservationsPage = lazy(() =>
   import('../features/reservations/reservations-page').then((module) => ({ default: module.ReservationsPage })),
 );
 
+const CustomerBookingPage = lazy(() => import('../features/booking/customer-booking-page').then((module) => ({ default: module.CustomerBookingPage })))
+const CalendarCallbackPage = lazy(() => import('../features/calendar/calendar-callback-page').then((module) => ({ default: module.CalendarCallbackPage })))
+
 export function AppRouter() {
   return (
     <Routes>
@@ -78,6 +82,8 @@ export function AppRouter() {
         <Route index element={<HomePage />} />
         <Route path="project" element={<ProjectPage />} />
         <Route path="book/:slug" element={<PublicBookingPage />} />
+        <Route path="booking/manage/:bookingId" element={<CustomerBookingPage />} />
+        <Route path="calendar/callback" element={<CalendarCallbackPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
@@ -86,6 +92,7 @@ export function AppRouter() {
         <Route element={<ProtectedRoute />}>
           <Route path="dashboard" element={<BusinessesPage />} />
           <Route path="onboarding" element={<CreateBusinessPage />} />
+          <Route element={<BusinessLayout />}>
           <Route path="dashboard/:businessId" element={<BusinessPage />} />
           <Route path="dashboard/:businessId/reservations" element={<ReservationsPage />} />
           <Route path="dashboard/:businessId/availability" element={<AvailabilityPage />} />
@@ -93,6 +100,7 @@ export function AppRouter() {
           <Route path="dashboard/:businessId/employees/:employeeId/schedule" element={<SchedulePage />} />
           <Route path="dashboard/:businessId/services" element={<ServicesPage />}
           />
+          </Route>
         </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Route>

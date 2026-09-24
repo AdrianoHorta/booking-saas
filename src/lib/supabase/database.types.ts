@@ -14,9 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      booking_revisions: {
+        Row: {
+          business_id: string
+          revision: number
+        }
+        Insert: {
+          business_id: string
+          revision?: number
+        }
+        Update: {
+          business_id?: string
+          revision?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_revisions_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: true
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
           business_id: string
+          cancellation_notice_hours: number
+          cancelled_at: string | null
+          cancelled_by: string | null
+          cancelled_by_customer: boolean
           created_at: string
           currency: string
           customer_id: string
@@ -28,6 +55,8 @@ export type Database = {
           price_cents: number
           request_fingerprint: string | null
           request_id: string
+          rescheduled_at: string | null
+          rescheduled_by: string | null
           service_id: string
           service_name: string
           starts_at: string
@@ -36,6 +65,10 @@ export type Database = {
         }
         Insert: {
           business_id: string
+          cancellation_notice_hours?: number
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          cancelled_by_customer?: boolean
           created_at?: string
           currency?: string
           customer_id: string
@@ -47,6 +80,8 @@ export type Database = {
           price_cents: number
           request_fingerprint?: string | null
           request_id: string
+          rescheduled_at?: string | null
+          rescheduled_by?: string | null
           service_id: string
           service_name: string
           starts_at: string
@@ -55,6 +90,10 @@ export type Database = {
         }
         Update: {
           business_id?: string
+          cancellation_notice_hours?: number
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          cancelled_by_customer?: boolean
           created_at?: string
           currency?: string
           customer_id?: string
@@ -66,6 +105,8 @@ export type Database = {
           price_cents?: number
           request_fingerprint?: string | null
           request_id?: string
+          rescheduled_at?: string | null
+          rescheduled_by?: string | null
           service_id?: string
           service_name?: string
           starts_at?: string
@@ -138,6 +179,7 @@ export type Database = {
       businesses: {
         Row: {
           address: string | null
+          cancellation_notice_hours: number
           created_at: string
           currency: string
           description: string | null
@@ -155,6 +197,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          cancellation_notice_hours?: number
           created_at?: string
           currency?: string
           description?: string | null
@@ -172,6 +215,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          cancellation_notice_hours?: number
           created_at?: string
           currency?: string
           description?: string | null
@@ -261,6 +305,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "employee_blocked_periods_employee_fkey"
+            columns: ["business_id", "employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["business_id", "id"]
+          },
+        ]
+      }
+      employee_calendar_credentials: {
+        Row: {
+          business_id: string
+          calendar_id: string | null
+          calendar_name: string | null
+          credentials: string | null
+          employee_id: string
+          state_expires_at: string | null
+          state_hash: string | null
+          user_id: string
+          version: string
+        }
+        Insert: {
+          business_id: string
+          calendar_id?: string | null
+          calendar_name?: string | null
+          credentials?: string | null
+          employee_id: string
+          state_expires_at?: string | null
+          state_hash?: string | null
+          user_id: string
+          version?: string
+        }
+        Update: {
+          business_id?: string
+          calendar_id?: string | null
+          calendar_name?: string | null
+          credentials?: string | null
+          employee_id?: string
+          state_expires_at?: string | null
+          state_hash?: string | null
+          user_id?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_calendar_credentials_business_id_employee_id_fkey"
             columns: ["business_id", "employee_id"]
             isOneToOne: false
             referencedRelation: "employees"
@@ -439,6 +527,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calendar_connection_backend: {
+        Args: {
+          action: string
+          payload?: Json
+          target_business_id: string
+          target_user_id: string
+        }
+        Returns: Json
+      }
+      calendar_connection_status: {
+        Args: { target_business_id: string }
+        Returns: Json
+      }
+      cancel_booking: {
+        Args: { target_booking_id: string; target_business_id: string }
+        Returns: Json
+      }
+      cancel_customer_booking: {
+        Args: { cancellation_token: string; target_booking_id: string }
+        Returns: Json
+      }
       confirm_booking: {
         Args: {
           business_slug: string
@@ -469,6 +578,10 @@ export type Database = {
         }
         Returns: Json
       }
+      get_customer_booking: {
+        Args: { cancellation_token: string; target_booking_id: string }
+        Returns: Json
+      }
       get_public_booking_availability: {
         Args: {
           target_business_slug: string
@@ -482,6 +595,14 @@ export type Database = {
         Args: { target_business_slug: string }
         Returns: Json
       }
+      get_reschedule_slots: {
+        Args: {
+          target_booking_id: string
+          target_business_id: string
+          target_date: string
+        }
+        Returns: Json
+      }
       list_business_members: {
         Args: { target_business_id: string }
         Returns: {
@@ -493,6 +614,15 @@ export type Database = {
       remove_business_member: {
         Args: { target_business_id: string; target_user_id: string }
         Returns: undefined
+      }
+      reschedule_booking: {
+        Args: {
+          expected_start: string
+          requested_start: string
+          target_booking_id: string
+          target_business_id: string
+        }
+        Returns: Json
       }
       save_business_member: {
         Args: {
@@ -519,6 +649,10 @@ export type Database = {
           target_employee_id: string
         }
         Returns: undefined
+      }
+      set_cancellation_policy: {
+        Args: { notice_hours: number; target_business_id: string }
+        Returns: number
       }
       set_public_booking_enabled: {
         Args: { enabled: boolean; target_business_id: string }

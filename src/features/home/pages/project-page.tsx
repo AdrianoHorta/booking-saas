@@ -3,9 +3,10 @@ import { PageHeading } from '../../../components/ui/page-heading'
 
 const stages = [
   { title: 'A base da experiência', description: 'Estrutura inicial, navegação e identidade visual.', status: 'Concluído' },
-  { title: 'Empresas e equipas', description: 'Autenticação disponível. Gestão de empresas, serviços e profissionais em desenvolvimento.', status: 'Etapa atual' },
-  { title: 'Das disponibilidades às reservas', description: 'Horários, marcações públicas e gestão da agenda.', status: 'Planeado' },
-  { title: 'Um produto para explorar', description: 'Indicadores, demonstração e publicação online.', status: 'Planeado' },
+  { title: 'Empresas e equipas', description: 'Contas, empresas, permissões, serviços e profissionais num espaço de gestão comum.', status: 'Implementado' },
+  { title: 'Das disponibilidades às reservas', description: 'Horários, reservas públicas, cancelamento, reagendamento e atualização da agenda em tempo real.', status: 'Implementado' },
+  { title: 'Um produto para explorar', description: 'Demonstração sem conta com dados fictícios. Validação final e preparação para publicação em curso.', status: 'Etapa atual' },
+  { title: 'As próximas integrações', description: 'Sincronização com Google Calendar, notificações automáticas e indicadores do negócio.', status: 'Planeado' },
 ]
 
 export function ProjectPage() {
@@ -33,7 +34,10 @@ export function ProjectPage() {
           ))}
         </ol>
       </section>
-      <div className="mt-8"><ActionLink to="/" variant="secondary">Voltar ao início</ActionLink></div>
+      <div className="mt-8 flex flex-wrap items-center gap-5">
+        <a href="/demo" className="text-sm font-medium text-brand underline underline-offset-4">Experimentar demonstração</a>
+        <ActionLink to="/" variant="secondary">Voltar ao início</ActionLink>
+      </div>
     </>
   )
 }

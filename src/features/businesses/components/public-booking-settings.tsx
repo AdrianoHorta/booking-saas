@@ -1,4 +1,5 @@
 import { Button } from '../../../components/ui/button'
+import { CancellationSettings } from './cancellation-settings'
 import { Message } from '../../../components/feedback/message'
 import type { BusinessSummary } from '../business.types'
 import { useSetPublicBookingEnabled } from '../hooks/use-businesses'
@@ -22,5 +23,6 @@ export function PublicBookingSettings({ business }: { business: BusinessSummary 
     </Button> : <p className="text-sm text-muted">Apenas o proprietário e os administradores podem alterar a publicação.</p>}
     {mutation.isError && <Message error>{mutation.error.message}</Message>}
     {mutation.isSuccess && <Message>Alteração de publicação guardada.</Message>}
+    {canManage && <CancellationSettings businessId={business.id} initialHours={business.cancellation_notice_hours ?? 12} />}
   </section>
 }

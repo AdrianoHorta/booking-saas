@@ -38,10 +38,11 @@ export function HomePage() {
             Uma forma mais serena de organizar marcações.
             Pensada para quem valoriza o seu trabalho — e o tempo de quem chega.
           </p>
-          <div className="mt-9">
+          <div className="mt-9 flex flex-wrap items-center gap-5">
             <ActionLink to="/register">Criar conta <span aria-hidden="true">↗</span></ActionLink>
+            <a href="/demo" className="text-sm font-medium text-brand underline underline-offset-4">Experimentar demonstração</a>
           </div>
-          <p className="mt-5 text-xs text-muted">Em desenvolvimento. Reservas disponíveis numa próxima etapa.</p>
+          <p className="mt-5 text-xs text-muted">Experimente com dados fictícios, sem criar conta.</p>
         </div>
         <AgendaPreview />
       </div>

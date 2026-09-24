@@ -1,7 +1,8 @@
 # Google Calendar — decisão de arquitetura
 
-Estado: planeado, sem tabelas, OAuth, funções ou jobs implementados nesta fase.
-A integração entra na Fase 12.x, depois da gestão de reservas e realtime.
+Estado: fase A implementada; configuração OAuth e teste real pendentes.
+Ver [implementação e configuração](phase-12a.md). Jobs e sincronização de eventos
+continuam planeados para as fases B–D.
 
 ## Ligação por colaborador
 

@@ -19,7 +19,7 @@ insert into employee_services(business_id,employee_id,service_id) values
 
 set local role anon;
 select is(get_public_booking_catalog('catalog-test-a'),
- '{"business":{"name":"Public A","slug":"catalog-test-a","timezone":"Europe/Lisbon"},"services":[{"id":"a2000000-0000-0000-0000-000000000001","name":"Corte","duration_minutes":30,"price_cents":1500,"currency":"EUR","employees":[{"id":"a3000000-0000-0000-0000-000000000001","name":"Ana"}]}]}'::jsonb,
+ '{"business":{"name":"Public A","slug":"catalog-test-a","timezone":"Europe/Lisbon","cancellation_notice_hours":12},"services":[{"id":"a2000000-0000-0000-0000-000000000001","name":"Corte","duration_minutes":30,"price_cents":1500,"currency":"EUR","employees":[{"id":"a3000000-0000-0000-0000-000000000001","name":"Ana"}]}]}'::jsonb,
  'Anonymous catalog exposes only the exact public contract and assigned local selections');
 select throws_ok($$select get_public_booking_catalog('catalog-test-b')$$,'42501','Public booking unavailable','Unpublished business hidden');
 select throws_ok($$select get_public_booking_catalog('missing')$$,'42501','Public booking unavailable','Missing business uses same error');
