@@ -1,5 +1,11 @@
 # Testes automáticos de browser — cliente e equipa
 
+Atualização de 28 de setembro de 2026: `e2e/product.spec.ts` substitui os antigos
+cenários de demonstração. Valida a apresentação, funcionalidades, criação de
+conta, encaminhamento das ligações antigas e acesso ao painel sem mostrar o email.
+Inclui acessibilidade e capturas de ecrã em desktop e mobile. Os números e os
+cenários de demo nas secções históricas abaixo referem-se às revisões anteriores.
+
 ## OBJECTIVE
 
 Validar os percursos públicos e a agenda privada sem intervenção manual, credenciais Google ou

@@ -5,7 +5,7 @@ const appointments = [
 
 export function AgendaPreview() {
   return (
-    <figure aria-label="Ilustração de uma agenda com marcações fictícias" className="relative mx-auto w-full max-w-lg lg:pt-5">
+    <figure aria-label="Ilustração de uma agenda de marcações" className="relative mx-auto w-full max-w-lg lg:pt-5">
       <div className="agenda-art relative isolate overflow-hidden rounded-t-[12rem] px-5 pb-10 pt-16 sm:px-10 sm:pb-14 sm:pt-24">
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-6 bottom-0 top-6 -z-10 rounded-t-[12rem] border border-white/40" />
         <p className="editorial-label mb-8 text-center text-ink">Cada marcação, no seu lugar.</p>
@@ -34,7 +34,7 @@ export function AgendaPreview() {
           <p className="font-display text-xl italic">Tudo a seu tempo.</p>
         </div>
       </div>
-      <figcaption className="mt-4 text-center text-[11px] tracking-wide text-muted">Estudo visual da agenda · Dados ilustrativos</figcaption>
+      <figcaption className="mt-4 text-center text-[11px] tracking-wide text-muted">Uma agenda com espaço para o que importa.</figcaption>
     </figure>
   )
 }

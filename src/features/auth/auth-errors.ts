@@ -7,7 +7,7 @@ const messages: Record<string, string> = {
   same_password: 'A nova password deve ser diferente da anterior.',
   over_request_rate_limit: 'Demasiadas tentativas. Aguarde alguns minutos e tente novamente.',
   over_email_send_rate_limit: 'O limite de envio foi atingido. Aguarde antes de pedir outro email.',
-  email_address_not_authorized: 'O envio de emails ainda está limitado neste ambiente. Contacte o responsável pelo projeto.',
+  email_address_not_authorized: 'Não foi possível enviar o email para este endereço. Tente novamente mais tarde.',
   signup_disabled: 'O registo está temporariamente indisponível.',
   session_not_found: 'A sessão expirou. Entre novamente ou peça um novo link.',
   otp_expired: 'O link expirou ou já foi utilizado. Peça um novo link.',

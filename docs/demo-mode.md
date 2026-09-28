@@ -1,5 +1,10 @@
 # Modo de demonstração
 
+> Histórico: desde 28 de setembro de 2026, a demonstração deixou de estar
+> disponível na aplicação publicada. `/demo` encaminha para `/`; o código abaixo
+> permanece no repositório, sem ser importado ou incluído no build de produção.
+> Os percursos públicos atuais são validados em `e2e/product.spec.ts`.
+
 ## OBJECTIVE
 
 Apresentar os percursos de reserva e gestão de uma barbearia com dados fictícios,

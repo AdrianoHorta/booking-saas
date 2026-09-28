@@ -1,104 +1,65 @@
-# Fecho do MVP e publicação
+# Publicação
 
-Atualização de 24 de setembro de 2026: o utilizador confirmou que Vercel e Supabase
-já estão configurados e os percursos existentes foram testados na app publicada.
-A prioridade passou para integrações e indicadores, com design no fim.
-O código da [fase 13](phase-13-integrations.md) está implementado e o backend
-publicado no Supabase ligado, com cron ativo; falta ativar fornecedores e atualizar o frontend.
-As listas de publicação abaixo servem de referência, não de pedido para refazer o deploy inicial.
+## Revisão de 28 de setembro de 2026
 
-## Implementado
+A interface pública apresenta o produto e as funcionalidades disponíveis. Foram
+retirados o roteiro de desenvolvimento, as chamadas para demonstração e o email
+redundante no painel. O email de acesso continua disponível no perfil pessoal.
 
-- [x] Contas, empresas, membros e permissões owner/admin/employee.
-- [x] Serviços, profissionais, horários, bloqueios e disponibilidade.
-- [x] Reserva pública com prevenção de sobreposição e recuperação de pedidos.
-- [x] Agenda privada, resumo, cancelamento com prazo e reagendamento.
-- [x] Ligação privada para o cliente consultar/cancelar sem conta.
-- [x] Atualização Realtime da área privada com recuperação por nova consulta.
-- [x] Demonstração isolada em `/demo`, sem contas ou serviços externos.
-- [x] Testes de acessibilidade, teclado e percursos desktop/mobile.
-- [x] Playwright sobre build de produção em `dist-e2e`, com APIs simuladas.
-- [x] Workflow GitHub Actions: lint, Vitest, build e Playwright, sem segredos.
-- [x] Configuração Vercel: build, saída, rotas SPA e headers.
-- [x] Página de apresentação do projeto atualizada com o estado real.
+`/features` apresenta as funcionalidades; `/project` encaminha para essa página.
+`/demo` e `/demo/` encaminham para `/`. O código de demonstração não é incluído
+no build. Os testes e registos técnicos históricos permanecem no repositório.
 
-## Para fechar hoje: portefólio
+## Publicar o frontend
 
-1. **Publicar a revisão atual.** Rever e guardar as alterações no Git, executar a
-   CI e publicar no projeto Vercel pretendido. A configuração local está preparada;
-   a execução remota do workflow e o deploy desta revisão não foram verificados.
-2. **Confirmar o domínio.** Abrir `/`, `/project` e `/demo` diretamente e recarregar
-   cada página. Executar uma reserva, reagendamento e cancelamento na demonstração,
-   também no telemóvel. Os testes locais não verificam o encaminhamento da Vercel.
-3. **Apresentação.** Acrescentar o URL publicado e screenshots ao README e gravar
-   um percurso curto da demonstração. Usar apenas os exemplos fictícios.
+1. Executar `npm run lint`, `npm test`, `npm run build` e `npm run test:e2e`.
+2. No projeto Vercel pretendido, usar Node.js 24 e definir `VITE_SUPABASE_URL` e
+   `VITE_SUPABASE_PUBLISHABLE_KEY` do destino correto antes do build.
+3. Publicar a revisão validada. `vercel.json` configura `npm run build`, saída
+   `dist`, fallback SPA e headers de segurança.
+4. Abrir `/`, `/features`, `/register` e `/login` no domínio final, incluindo
+   navegação direta e reload. Confirmar também os redirects de `/project` e `/demo`.
+5. Com uma conta e empresa autorizadas, verificar `/dashboard`, `/account`,
+   `/book/:slug` e a ligação privada de uma reserva em desktop e telemóvel.
 
-A demonstração funciona sem variáveis Supabase. Para oferecer também os percursos
-reais de contas e reservas, concluir os pontos da secção seguinte antes de os
-apresentar como prontos para utilização real.
+## Serviços reais
 
-## Para abrir contas e reservas reais
+A preparação visual não substitui a validação das configurações remotas.
+O ambiente documentado anteriormente era `booking-saas-dev`; confirmar o destino
+pretendido antes de alterar a base ou as definições de autenticação.
 
-- [ ] Definir o projeto Supabase de produção e aplicar as migrations nesse destino.
-  O projeto documentado atualmente é `booking-saas-dev`; não confundir os dois.
-- [ ] Configurar na Vercel `VITE_SUPABASE_URL` e
-  `VITE_SUPABASE_PUBLISHABLE_KEY` do destino correto e voltar a fazer build/deploy.
-  Estas variáveis são públicas; segredos de servidor não pertencem ao frontend.
-- [ ] No Supabase Auth, configurar Site URL e redirects exatos do domínio publicado:
-  `/auth/callback` e `/reset-password`. Ver [redirects oficiais](https://supabase.com/docs/guides/auth/redirect-urls).
-- [ ] Ativar confirmação de email em produção, configurar SMTP e verificar registo,
-  confirmação e recuperação de password numa caixa de correio real.
-  Ver [configuração SMTP](https://supabase.com/docs/guides/auth/auth-smtp).
-- [ ] Executar o percurso completo com dados de teste na cloud: criar empresa,
-  serviço, profissional e horário; publicar a página; reservar como visitante;
-  consultar na equipa; reagendar; cancelar pela ligação privada e confirmar vaga livre.
-- [ ] Validar Realtime em duas janelas e recuperação após desligar/ligar a rede.
-  Confirmar que outra empresa não vê as reservas e que employee só vê a sua agenda.
+- [x] Migrations 027 e 028 aplicadas no projeto ligado `booking-saas-dev` em
+  28 de setembro, corrigindo a ausência dos perfis e do armazenamento de imagens.
+  Confirmar migrations novamente se o frontend apontar para outro destino.
+- [ ] Confirmar Site URL e redirects de Auth para o domínio final:
+  `/auth/callback` e `/reset-password`.
+- [ ] Configurar e validar SMTP, confirmação de email e recuperação de password.
+  O ambiente de desenvolvimento documentado tinha confirmação de email desativada.
+- [ ] Verificar um percurso real de registo, login, recuperação, edição de perfil,
+  criação de empresa, serviços, equipa, horários e publicação das reservas.
+- [ ] Verificar reserva, reagendamento pela equipa, cancelamento pelo cliente e
+  atualização da agenda entre duas sessões.
+- [ ] Antes de ativar emails de reservas, confirmar domínio/credenciais Resend,
+  origem da aplicação e worker; verificar a receção de uma mensagem real.
 
-O cliente precisa de guardar a ligação privada apresentada no recibo. Ainda não
-há envio automático por email da confirmação, cancelamento ou reagendamento.
+Google Calendar permanece desativado na interface. Reativar apenas depois de
+configurar OAuth e verificar o ciclo de ligação e sincronização real. Ver
+[integrações](phase-13-integrations.md) e [Google Calendar](phase-12a.md).
 
-## Integrações e melhorias restantes
+Migrations e Edge Functions são publicadas separadamente. Não executar os testes
+SQL ou de concorrência sobre uma base com dados reais.
 
-| Item | O que falta |
-| --- | --- |
-| Google Calendar A | Configurar OAuth e os quatro segredos; testar ligação, escolha de calendário e revogação com conta real. |
-| Google Calendar B/C | Código e cron publicados; configurar OAuth e validar conta real. |
-| Google Calendar D | Ler períodos ocupados e integrá-los na disponibilidade; etapa posterior. |
-| Notificações | Resend implementado e cron ativo; configurar domínio/key e origem da app. Ativar por empresa e validar email real. |
-| Analytics | Indicadores implementados e testados; publicar a atualização frontend na Vercel. |
-| Testes adicionais | Realtime durante formulários e OAuth/SMTP reais; Safari/Firefox e dispositivos físicos ainda sem cobertura. |
+## Limites da validação local
 
-Detalhes Google: [fase A](phase-12a.md) e [arquitetura](google-calendar-architecture.md).
+Validação desta revisão: lint e build aprovados; 280 testes Vitest aprovados com
+`node node_modules/vitest/vitest.mjs run --maxWorkers=2`; 80 testes Playwright
+aprovados em desktop e mobile, incluindo verificações de acessibilidade.
+A execução Vitest com concorrência automática excedeu o tempo de espera num
+teste de serviços; o teste isolado e a suite completa com dois workers passaram.
+As capturas das páginas inicial e de funcionalidades foram revistas nos dois
+formatos. Não foi efetuado deploy do frontend. Posteriormente, as migrations
+027 e 028 foram aplicadas no Supabase para corrigir o carregamento do perfil.
 
-## Publicar na Vercel
-
-O `vercel.json` declara framework Vite, `npm run build`, saída `dist` e fallback
-para `index.html`. Segue o [suporte oficial a Vite e rotas SPA](https://vercel.com/docs/frameworks/frontend/vite).
-
-1. Importar ou selecionar o repositório/projeto correto e usar Node.js 24.
-2. Preencher as duas variáveis públicas apenas se forem usados os percursos reais.
-3. Publicar a revisão validada e registar o URL aqui/README.
-4. Verificar navegação direta e reload; as páginas `/book/:slug`,
-   `/booking/manage/:id#token=...` e `/dashboard/:businessId/reservations` precisam
-   de dados/sessão de teste válidos para verificar também o resultado funcional.
-5. Verificar no domínio os headers `X-Content-Type-Options: nosniff`,
-   `Referrer-Policy: no-referrer` e `X-Frame-Options: DENY`.
-
-Migrations e Edge Functions são publicadas separadamente do frontend. Os testes
-`db:test:cloud` e `db:test:concurrency` destinam-se ao projeto de desenvolvimento,
-nunca a uma base com dados reais. O workflow CI não chama estes comandos.
-
-## Validação desta revisão
-
-- Vitest: 277 testes aprovados.
-- Build TypeScript/Vite e lint: aprovados.
-- Playwright: 70 testes aprovados numa execução geral, com APIs simuladas.
-- SQL: 683 testes aprovados com as migrations novas em transações com rollback;
-  36 testes da integração repetidos após aplicar o esquema.
-- Deno: duas Edge Functions verificadas e publicadas; cron ativo. OAuth/Resend
-  ainda não configurados na última verificação; nenhum email ou evento real enviado nos testes.
-
-Comandos: `npm run lint`, `npm test`, `npm run build`, `npm run test:e2e`.
-A primeira execução Playwright precisa de `npx playwright install chromium`.
-O workflow segue o [guia CI do Playwright](https://playwright.dev/docs/ci).
+Playwright usa APIs simuladas em Chromium, em desktop e emulação móvel. Não
+comprova redirects da Vercel, entrega de emails, OAuth, Realtime remoto ou regras
+RLS na base publicada. Estes pontos exigem verificação no domínio e ambiente final.

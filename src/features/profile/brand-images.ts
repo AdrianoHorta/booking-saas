@@ -38,6 +38,31 @@ export async function uploadBrandImage(scope: 'users' | 'businesses', id: string
   return path
 }
 
+export type ImageFrame = { zoom: number; x: number; y: number }
+export const defaultImageFrame: ImageFrame = { zoom: 1, x: 0, y: 0 }
+
+// Export the same square viewport shown in the editor. The circular mask belongs
+// to the avatar UI, so the stored image also works in rectangular placements.
+export async function frameImage(image: Blob, frame: ImageFrame, logo: boolean): Promise<Blob> {
+  if (!Number.isFinite(frame.zoom) || frame.zoom < 0.5 || frame.zoom > 3 ||
+      !Number.isFinite(frame.x) || Math.abs(frame.x) > 50 || !Number.isFinite(frame.y) || Math.abs(frame.y) > 50) {
+    throw new Error('O enquadramento da imagem não é válido.')
+  }
+  const bitmap = await createImageBitmap(image)
+  try {
+    const canvas = document.createElement('canvas')
+    canvas.width = 768; canvas.height = 768
+    const context = canvas.getContext('2d')
+    if (!context) throw new Error('Não foi possível preparar a imagem neste browser.')
+    const scale = (logo ? Math.min(768 / bitmap.width, 768 / bitmap.height) : Math.max(768 / bitmap.width, 768 / bitmap.height)) * frame.zoom
+    const width = bitmap.width * scale; const height = bitmap.height * scale
+    context.drawImage(bitmap, (768 - width) / 2 + 768 * frame.x / 100, (768 - height) / 2 + 768 * frame.y / 100, width, height)
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/webp', 0.9))
+    if (!blob || blob.type !== 'image/webp') throw new Error('Não foi possível guardar o enquadramento neste browser.')
+    return blob
+  } finally { bitmap.close() }
+}
+
 export async function removeOldBrandImage(path: string | null | undefined) {
   if (!path || !imagePath.test(path)) return
   // Only after the new reference is confirmed. An uncertain save must keep the uploaded object.

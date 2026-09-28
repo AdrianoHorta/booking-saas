@@ -19,8 +19,14 @@ mantêm-se; alterar o nome não invalida as ligações públicas existentes.
 - O bucket público `brand-images` aceita imagens até 5 MB. RLS limita uploads e
   remoções à pasta do próprio utilizador ou às empresas de que é proprietário.
   Não há permissão para sobrescrever objetos; cada upload recebe um UUID.
-- O browser aceita JPG, PNG e WebP, descodifica a imagem e exporta WebP com até
-  768 px no lado maior. O ficheiro original e os seus metadados não são enviados.
+- O browser aceita JPG, PNG e WebP, descodifica a imagem e exporta o enquadramento
+  em WebP de 768 × 768 px. O ficheiro original e os seus metadados não são enviados.
+- Escolher uma imagem abre um modal com zoom de 50% a 300% e posicionamento por
+  arrasto com rato ou toque. As teclas de direção também movem a imagem (Shift
+  permite passos maiores). A pré-visualização usa os mesmos pixels que serão
+  enviados ao guardar. Também se pode abrir uma
+  imagem já guardada através de **Ajustar enquadramento**. Cancelar ou Escape não altera
+  a imagem publicada; para recuperar partes anteriormente cortadas, escolher o original.
 - O utilizador vê a pré-visualização antes de guardar e é informado de que a imagem
   será pública. Sem imagem ou se o carregamento falhar, aparecem as iniciais.
 - Só depois da referência ser guardada se tenta remover a imagem anterior. Uma
@@ -34,6 +40,13 @@ Aplicar as migrations 027 e 028, pela ordem habitual, e publicar o frontend.
 A migration 028 cria o bucket, as policies, a tabela e os RPCs, e acrescenta a
 fotografia ao catálogo. Não é necessário criar o bucket manualmente. Logos antigos
 por URL HTTPS continuam a ser apresentados; uploads novos usam caminhos do bucket.
+
+Em 28 de setembro de 2026, o erro de carregamento do perfil foi diagnosticado no
+projeto ligado `booking-saas-dev`: a tabela `user_profiles` e a função
+`get_my_profile()` ainda não existiam. As migrations 027 e 028 foram aplicadas,
+sem seeds nem remoção de dados. Uma transação só de leitura com identidade
+fictícia confirmou que uma conta sem perfil recebe nome vazio e fotografia nula.
+A alteração do editor de imagens requer publicação do frontend.
 
 Email/password usam [Supabase Auth updateUser](https://supabase.com/docs/reference/javascript/auth-updateuser).
 A alteração de email mostra o endereço atual e o pedido pendente, sem anunciar a

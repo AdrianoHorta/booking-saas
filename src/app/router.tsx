@@ -1,9 +1,9 @@
 import { lazy } from "react";
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 import { PublicLayout } from "./layouts/public-layout";
 import { BusinessLayout } from './layouts/business-layout';
 import { HomePage } from "../features/home/pages/home-page";
-import { ProjectPage } from "../features/home/pages/project-page";
+import { FeaturesPage } from "../features/home/pages/features-page";
 import { NotFoundPage } from "../components/feedback/not-found-page";
 import { ProtectedRoute } from "../features/auth/components/protected-route";
 const LoginPage = lazy(() =>
@@ -83,7 +83,9 @@ export function AppRouter() {
     <Routes>
       <Route element={<PublicLayout />}>
         <Route index element={<HomePage />} />
-        <Route path="project" element={<ProjectPage />} />
+        <Route path="features" element={<FeaturesPage />} />
+        <Route path="project" element={<Navigate to="/features" replace />} />
+        <Route path="demo" element={<Navigate to="/" replace />} />
         <Route path="book/:slug" element={<PublicBookingPage />} />
         <Route path="booking/manage/:bookingId" element={<CustomerBookingPage />} />
         {/* Google Calendar temporariamente desativado.

@@ -4,13 +4,13 @@ import { useAuth } from '../../features/auth/auth-context'
 
 const pageTitles: Record<string, string> = {
   '/': 'Reservas com espaço para crescer',
-  '/project': 'Sobre o projeto',
+  '/features': 'Funcionalidades',
   '/login': 'Entrar',
   '/register': 'Criar conta',
   '/forgot-password': 'Recuperar acesso',
   '/reset-password': 'Nova password',
   '/auth/callback': 'Confirmar acesso',
-  '/dashboard': 'Área privada',
+  '/dashboard': 'Os meus negócios',
   '/account': 'O meu perfil',
   '/onboarding': 'Criar empresa',
 }
@@ -45,10 +45,10 @@ export function PublicLayout() {
           </Link>
           {isBooking ? <span className="text-xs text-muted">Reservas online</span> : <nav aria-label="Navegação principal" className="flex flex-wrap items-center gap-5 text-sm sm:gap-8">
             <NavLink to="/" end className={({ isActive }) => isActive ? 'rounded-sm font-semibold text-brand underline underline-offset-8' : 'rounded-sm text-muted hover:text-brand'}>
-              Apresentação
+              Início
             </NavLink>
-            <NavLink to="/project" className={({ isActive }) => isActive ? 'rounded-sm font-semibold text-brand underline underline-offset-8' : 'rounded-sm text-muted hover:text-brand'}>
-              O projeto
+            <NavLink to="/features" className={({ isActive }) => isActive ? 'rounded-sm font-semibold text-brand underline underline-offset-8' : 'rounded-sm text-muted hover:text-brand'}>
+              Funcionalidades
             </NavLink>
             {!isLoading && <>
               <Link to={session ? '/dashboard' : '/login'} className="border-l border-line pl-5 font-medium text-brand hover:underline sm:pl-8">{session ? 'Os meus negócios' : 'Entrar'}</Link>
@@ -65,7 +65,7 @@ export function PublicLayout() {
       <footer className="border-t border-line">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-8 text-xs text-muted sm:px-12">
           <p className="font-display text-lg italic text-ink">O tempo bem cuidado.</p>
-          <p className="tracking-wide">{isBooking ? 'Reservas com Booking SaaS' : 'Booking SaaS · Projeto em desenvolvimento'}</p>
+          <p className="tracking-wide">{isBooking ? 'Reservas com Booking SaaS' : `© ${new Date().getFullYear()} Booking SaaS · Gestão de reservas`}</p>
         </div>
       </footer>
     </div>

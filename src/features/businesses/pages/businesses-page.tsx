@@ -1,7 +1,6 @@
 import { Link } from 'react-router'
 import { Avatar } from '../../../components/ui/avatar'
 import { useProfile } from '../../profile/use-profile'
-import { useAuth } from '../../auth/auth-context'
 import { SignOutButton } from '../../auth/components/sign-out-button'
 import { ActionLink } from '../../../components/ui/action-link'
 import { Button } from '../../../components/ui/button'
@@ -10,16 +9,15 @@ import { useBusinesses } from '../hooks/use-businesses'
 import { BusinessList } from '../components/business-list'
 
 export function BusinessesPage() {
-  const { session } = useAuth()
   const businesses = useBusinesses()
   const profile = useProfile()
-  const displayName = profile.data?.full_name || session?.user.email || 'A sua conta'
+  const displayName = profile.data?.full_name || 'A sua conta'
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-line bg-surface p-4 sm:p-5">
         <div className="flex min-w-0 items-center gap-4">
           <Avatar name={displayName} path={profile.data?.avatar_path} className="size-12 text-lg" />
-          <div className="min-w-0"><p className="break-words text-sm font-medium">{profile.data?.full_name || 'Bem-vindo ao seu espaço.'}</p><p className="break-all text-xs text-muted">{session?.user.email}</p></div>
+          <div className="min-w-0"><p className="break-words text-sm font-medium">{profile.data?.full_name || 'Bem-vindo ao seu espaço.'}</p><p className="text-xs text-muted">O seu espaço de trabalho</p></div>
         </div>
         <Link to="/account" className="inline-flex min-h-11 items-center gap-3 text-sm font-medium text-brand">Editar perfil <span aria-hidden="true">→</span></Link>
       </div>
