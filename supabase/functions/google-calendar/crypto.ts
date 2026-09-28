@@ -1,4 +1,5 @@
-export const scope = 'openid https://www.googleapis.com/auth/calendar.calendarlist.readonly'
+export const eventScope = 'https://www.googleapis.com/auth/calendar.events'
+export const scope = `openid https://www.googleapis.com/auth/calendar.calendarlist.readonly ${eventScope}`
 export async function hash(value: string) {
   return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value))))
     .map((byte) => byte.toString(16).padStart(2, '0')).join('')

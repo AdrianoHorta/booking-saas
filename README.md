@@ -6,12 +6,13 @@ por etapas com foco em arquitetura, segurança e aprendizagem.
 ## Estado atual
 
 MVP implementado com contas, gestão de empresas/equipas, disponibilidade, reservas,
-cancelamento, reagendamento, Realtime e demonstração sem conta. Configuração de
-publicação preparada; configuração externa e validação real ainda pendentes.
-Ver a [checklist de fecho e publicação](docs/release-checklist.md).
+cancelamento, reagendamento, Realtime e demonstração sem conta. O utilizador já
+publicou na Vercel, configurou Supabase e testou os percursos existentes.
+Agora inclui indicadores e código de sincronização Google/Resend; servidor e cron
+instalados, OAuth e credenciais Resend por configurar. Ver [integrações e ativação](docs/phase-13-integrations.md).
 
 Supabase ligado ao projeto booking-saas-dev na cloud, com migrations de
-empresas/membros, onboarding, services, employees, horários, disponibilidade, confirmação de reservas, catálogo, disponibilidade públicos, controlo de publicação, gestão de membros, cancelamento pelo cliente, reagendamento, Realtime e ligação Calendar aplicadas, tipos gerados e 647 testes SQL
+empresas/membros, onboarding, services, employees, horários, disponibilidade, confirmação de reservas, catálogo, disponibilidade públicos, controlo de publicação, gestão de membros, cancelamento pelo cliente, reagendamento, Realtime, Calendar, fila de integrações e indicadores aplicadas, tipos gerados e 683 testes SQL
 aprovados. Este fluxo não precisa de Docker.
 
 Autenticação implementada: registo, login, recuperação de password, sessão e
@@ -24,7 +25,7 @@ A confirmação de reservas no servidor está criada e testada com concorrência
 A secção Acesso à empresa permite adicionar contas registadas pelo email, gerir
 permissões e retirar acesso sem apagar profissionais ou reservas. O formulário
 de colaboradores identifica as contas pelo email. Ver o [roteiro de associação
-do Miguel e demonstração](docs/members-and-demo.md). Suite frontend/servidor: 255 testes.
+do Miguel e demonstração](docs/members-and-demo.md). Suite frontend/servidor: 277 testes.
 
 Já existe consulta privada de reservas em `/dashboard/:businessId/reservations`:
 employee vê a sua agenda; owner/admin veem as reservas da empresa. Inclui contactos,
@@ -36,7 +37,8 @@ O resumo respeita o fuso da empresa e as permissões da agenda, com atualizaçã
 Reservas podem ser canceladas pela equipa autorizada ou pelo cliente com ligação
 privada, respeitando o prazo de 12h por defeito. Owner/admin configuram o prazo para
 novas reservas. A equipa pode reagendar a data/hora mantendo preço, duração e
-referência; falhas preservam a reserva original. Notificações continuam pendentes.
+referência; falhas preservam a reserva original. Emails via Resend implementados,
+desativados por empresa até configurar o fornecedor e ativar na interface.
 Ver [fase 11](docs/phase-11.md).
 
 A Fase 5 — Services está concluída na validação automatizada: catálogo, criação,
@@ -49,7 +51,8 @@ Testes de browser públicos e da agenda privada podem ser executados sem contas 
 `npm run test:e2e`. Cobrem reserva, recuperação após falha, conflito de vaga,
 cancelamento pelo cliente, seleção de colaborador, reagendamento, gestão de membros
 e mudança de sessão, em desktop e emulação móvel, com APIs e sessões simuladas.
-Inclui também a demonstração local e acessibilidade. Os testes usam um build de
+Inclui também demonstração, acessibilidade, indicadores e ativação de emails,
+num total de 70 testes. Os testes usam um build de
 produção isolado em `dist-e2e`, com APIs simuladas. O workflow
 `.github/workflows/ci.yml` executa lint, Vitest, build e Playwright em pushes e PRs,
 sem credenciais de serviços externos.
@@ -72,7 +75,8 @@ Ver [percurso e limites da demonstração](docs/demo-mode.md).
 
 Supabase Cloud suporta Auth, PostgreSQL e RLS. O acesso a dados usa TanStack
 Query; os formulários usam React Hook Form e Zod. O deploy Vercel está configurado
-em `vercel.json`; publicação e verificação do domínio seguem a checklist.
+em `vercel.json`. O projeto já está publicado; novas alterações frontend precisam
+de chegar ao repositório/deploy existente.
 
 A CLI Supabase está instalada como dependência de desenvolvimento com versão fixa.
 
@@ -152,19 +156,21 @@ Dashboard, os testes realizados e o percurso manual com emails reais.
 - [x] Fase 11 — Cancelamento com prazo configurável e ligação privada, reagendamento transacional; validação manual pendente.
 - [x] Fase 12 — Realtime na área privada; validação manual de duas janelas pendente. Ver [detalhes](docs/phase-12.md).
 - [ ] Fase 12.x A — Código OAuth/calendar connection implementado; configuração Google e teste real pendentes. Ver [guia](docs/phase-12a.md).
-- [ ] Fase 12.x B — SaaS → Google event sync.
-- [ ] Fase 12.x C — Update/cancel sync.
+- [x] Fase 12.x B — Criação de eventos via fila/worker; ativação real pendente.
+- [x] Fase 12.x C — Reagendamento/cancelamento de eventos; ativação real pendente.
 - [ ] Fase 12.x D — Mais tarde: Google busy time → availability engine.
-- [ ] Analytics.
+- [x] Indicadores de reservas, valor marcado, horas, dias e serviços para gestores.
+- [x] Emails de reservas via Resend e estado dos envios; cron ativo, credenciais pendentes.
 - [x] Modo de demonstração local e isolado em `/demo`, com dados fictícios.
-- [ ] Testes de integração/E2E completos — 64 testes de browser, incluindo demonstração e acessibilidade; integração real e restantes cenários ainda pendentes.
+- [ ] Testes de integração/E2E completos — 70 testes de browser; Google/Resend reais e restantes cenários ainda pendentes.
 - [ ] Polish.
-- [ ] Deploy — configuração preparada; publicação/verificação desta revisão pendente.
+- [x] Deploy inicial Vercel/Supabase, confirmado pelo utilizador. Atualização frontend desta etapa ainda por publicar.
 - [ ] README, screenshots e apresentação do portefólio.
 
 O [design Google Calendar](docs/google-calendar-architecture.md) define os contratos
 para employees, schedules, availability e bookings. A ligação Calendar está implementada;
-a configuração OAuth e a sincronização de eventos continuam pendentes.
+a sincronização de eventos está implementada. Configuração OAuth/Resend
+seguem o [guia da fase 13](docs/phase-13-integrations.md).
 
 ## Segurança
 

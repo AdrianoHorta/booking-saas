@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { createCalendarHandler } from './handler'
-import { seal } from './crypto'
+import { scope, seal } from './crypto'
 const key = btoa('a'.repeat(32))
 const rpc = vi.fn()
 const getUser = vi.fn()
@@ -28,7 +28,7 @@ it('stores only the hash and builds a fixed Google URL with minimal scopes', asy
   const url = new URL(result.url)
   expect(url.origin).toBe('https://accounts.google.com')
   expect(url.searchParams.get('redirect_uri')).toBe('http://localhost:5173/calendar/callback')
-  expect(url.searchParams.get('scope')).not.toContain('calendar.events')
+  expect(url.searchParams.get('scope')).toContain('calendar.events')
   expect(rpc.mock.calls[0][1].payload.state_hash).not.toBe(result.state)
 })
 it('does not exchange a code when the state or association fails', async () => {
@@ -59,7 +59,7 @@ it('clears local secrets only after revocation succeeds', async () => {
 })
 it('finishes OAuth with encrypted credentials and returns no token', async () => {
   rpc.mockResolvedValue({ data: { credentials: null, version: 'v1' }, error: null })
-  remote.mockResolvedValueOnce(Response.json({ access_token: 'access-secret', refresh_token: 'refresh-secret', scope: 'openid https://www.googleapis.com/auth/calendar.calendarlist.readonly' }))
+  remote.mockResolvedValueOnce(Response.json({ access_token: 'access-secret', refresh_token: 'refresh-secret', scope }))
     .mockResolvedValueOnce(Response.json({ sub: 'google-account' }))
   const result = await handler(request('finish', { state: 'a'.repeat(64), code: 'code' }))
   expect(await result.json()).toEqual({ connected: true })
@@ -74,7 +74,7 @@ it('refuses partial consent before saving credentials', async () => {
 })
 it('never reuses a previous refresh token for a different Google account', async () => {
   rpc.mockResolvedValue({ data: { credentials: await seal({ refreshToken: 'old-token', account: 'old-account' }, key), version: 'v1' }, error: null })
-  remote.mockResolvedValueOnce(Response.json({ access_token: 'access', scope: 'openid https://www.googleapis.com/auth/calendar.calendarlist.readonly' }))
+  remote.mockResolvedValueOnce(Response.json({ access_token: 'access', scope }))
     .mockResolvedValueOnce(Response.json({ sub: 'different-account' }))
   expect((await handler(request('finish', { state: 'a'.repeat(64), code: 'code' }))).status).toBe(422)
   expect(rpc).toHaveBeenCalledTimes(1)

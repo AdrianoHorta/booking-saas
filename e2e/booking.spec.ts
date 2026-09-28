@@ -1,13 +1,47 @@
 import type { Page } from '@playwright/test'
 import { auditAccessibility } from './accessibility'
-import { test, expect, employeeId, serviceId, receipt, customer } from './fixtures'
+import { test, expect, employeeId, serviceId, receipt, customer, catalog } from './fixtures'
+
+test('reserva por passos, calendário acessível e escolhas preservadas ao voltar', async ({ page, api }, info) => {
+  await page.clock.setFixedTime(new Date('2099-01-01T12:00:00Z'))
+  api.on('get_public_booking_catalog', async (route) => route.fulfill({ json: { ...catalog,
+    services: [...catalog.services, { ...catalog.services[0], id: '64000000-0000-4000-8000-000000000002', name: 'Barba e ritual de cuidado', duration_minutes: 45, price_cents: 2500 },
+      { ...catalog.services[0], id: '64000000-0000-4000-8000-000000000003', name: 'Corte e barba', duration_minutes: 60, price_cents: 3500 }],
+  } }))
+  await page.goto('/book/barbearia-teste')
+  await expect(page.getByRole('heading', { name: 'Escolha o seu cuidado.' })).toBeVisible()
+  await expect(page.getByLabel('Nome', { exact: true })).toHaveCount(0)
+  await page.screenshot({ path: info.outputPath('booking-services.png'), fullPage: true })
+  await auditAccessibility(page, info)
+  await page.getByRole('button', { name: /^Corte 30/ }).click()
+  await page.getByRole('button', { name: /Miguel/ }).click()
+  await expect(page.getByRole('button', { name: 'Mês anterior' })).toBeDisabled()
+  await page.getByRole('button', { name: 'Mês seguinte' }).click()
+  await expect(page.getByText('fevereiro de 2099', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: 'Mês anterior' }).click()
+  await page.screenshot({ path: info.outputPath('booking-calendar.png'), fullPage: true })
+  await auditAccessibility(page, info)
+  await page.getByRole('button', { name: /, 5 de janeiro de 2099/ }).click()
+  await page.getByRole('radio').first().check()
+  await page.screenshot({ path: info.outputPath('booking-times.png'), fullPage: true })
+  await auditAccessibility(page, info)
+  await page.getByRole('button', { name: 'Continuar', exact: true }).click()
+  await page.getByLabel('Nome', { exact: true }).fill('Ana')
+  await page.getByRole('button', { name: 'Voltar ao passo anterior' }).click()
+  await expect(page.getByRole('radio').first()).toBeChecked()
+  await page.getByRole('button', { name: 'Alterar dia' }).click()
+  await page.getByRole('button', { name: /, 6 de janeiro de 2099/ }).click()
+  await expect(page.getByRole('button', { name: 'Continuar', exact: true })).toBeDisabled()
+})
 
 async function reviewBooking(page: Page) {
+  await page.clock.setFixedTime(new Date('2099-01-01T12:00:00Z'))
   await page.goto('/book/barbearia-teste')
-  await page.getByRole('combobox', { name: 'Serviço', exact: true }).selectOption(serviceId)
-  await page.getByRole('combobox', { name: 'Profissional', exact: true }).selectOption(employeeId)
-  await page.getByLabel('Data', { exact: true }).fill('2099-01-05')
+  await page.getByRole('button', { name: /Corte/ }).click()
+  await page.getByRole('button', { name: /Miguel/ }).click()
+  await page.getByRole('button', { name: /, 5 de janeiro de 2099/ }).click()
   await page.getByRole('radio').first().check()
+  await page.getByRole('button', { name: 'Continuar', exact: true }).click()
   await page.getByLabel('Nome', { exact: true }).fill('Cliente de teste')
   await page.getByLabel('Email', { exact: true }).fill('cliente@example.test')
   await page.getByRole('button', { name: 'Rever reserva' }).click()
@@ -85,7 +119,7 @@ test('vaga entretanto ocupada não anuncia sucesso e permite nova seleção', as
   await reviewBooking(page)
   await page.getByRole('button', { name: 'Confirmar reserva' }).click()
   await expect(page.getByText('Este horário deixou de estar disponível. Escolha outra vaga.')).toBeVisible()
-  await expect(page.getByRole('combobox', { name: 'Serviço', exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: /Corte/ })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Reserva confirmada.' })).toHaveCount(0)
   expect(await page.evaluate(() => sessionStorage.getItem('booking-pending:barbearia-teste'))).toBeNull()
 })

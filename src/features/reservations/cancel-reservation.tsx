@@ -26,7 +26,7 @@ export function CancelReservation({ businessId, bookingId, serviceName, startsAt
   return <div className="border-t border-line pt-3">
     {!confirming ? <button ref={triggerRef} type="button" className="min-h-10 text-sm text-brand underline underline-offset-4" onClick={() => setConfirming(true)}>Cancelar reserva</button>
       : <div className="space-y-3" role="group" aria-label={`Cancelar ${serviceName}`}>
-        <p className="text-sm">Cancelar a reserva de {serviceName}? A vaga ficará livre. O cliente não recebe uma notificação automática.</p>
+        <p className="text-sm">Cancelar a reserva de {serviceName}? A vaga ficará livre. Se os emails estiverem ativos, será pedido o envio de uma notificação ao cliente.</p>
         <div className="flex flex-wrap gap-2"><Button disabled={mutation.isPending} onClick={() => mutation.mutate()}>{mutation.isPending ? 'A cancelar…' : 'Confirmar cancelamento'}</Button>
           <Button ref={keepRef} disabled={mutation.isPending} onClick={() => { setConfirming(false); mutation.reset() }}>Manter reserva</Button></div>
         {mutation.isError && <Message error>{mutation.error.message}</Message>}

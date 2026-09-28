@@ -1,8 +1,10 @@
 # Google Calendar — decisão de arquitetura
 
-Estado: fase A implementada; configuração OAuth e teste real pendentes.
-Ver [implementação e configuração](phase-12a.md). Jobs e sincronização de eventos
-continuam planeados para as fases B–D.
+Estado: fases A–C implementadas e cron instalado; configuração OAuth e teste real pendentes.
+Ver [implementação e ativação](phase-13-integrations.md). Os contratos abaixo
+documentam o desenho original; a fase D continua futura. A implementação atual
+preserva eventos antigos ao trocar/desligar calendários e usa IDs determinísticos
+de eventos, fila privada, leases e ETags.
 
 ## Ligação por colaborador
 

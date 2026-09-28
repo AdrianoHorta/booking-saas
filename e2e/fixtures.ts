@@ -33,7 +33,8 @@ export function syntheticSession(id: string, email = 'team@example.test') {
 export type TestApi = {
   calls: Call[];
   on: (name: string, handler: RpcHandler) => void;
-  onAuth: (endpoint: 'token' | 'logout', handler: RpcHandler) => void;
+  onAuth: (endpoint: 'token' | 'logout' | 'user' | 'reauthenticate', handler: RpcHandler) => void;
+  onStorage: (handler: (route: Route) => Promise<void>) => void;
   onGet: (table: string, handler: (route: Route, query: URLSearchParams) => Promise<void>) => void;
   signIn: (userId: string) => Promise<void>;
 }
@@ -44,16 +45,22 @@ export const test = base.extend<{ api: TestApi }>({
     let authenticated = false
     const reads = new Map<string, (route: Route, query: URLSearchParams) => Promise<void>>()
     const authHandlers = new Map<string, RpcHandler>()
+    let storageHandler: ((route: Route) => Promise<void>) | undefined
     const handlers = new Map<string, RpcHandler>([
       ['get_public_booking_catalog', async (route) => { await route.fulfill({ json: catalog }) }],
       ['get_public_booking_availability', async (route) => { await route.fulfill({ json: availability }) }],
       ['confirm_booking', async (route) => { await route.fulfill({ json: receipt }) }],
       ['get_customer_booking', async (route) => { await route.fulfill({ json: customer }) }],
+      ['get_my_profile', async (route) => { await route.fulfill({ json: { full_name: '', avatar_path: null } }) }],
     ])
     await context.route('**/*', async (route) => {
       const request = route.request()
       const url = new URL(request.url())
       if (url.origin === 'http://127.0.0.1:4177') return route.continue()
+      if (url.origin === 'https://booking-test.invalid' && url.pathname.startsWith('/storage/v1/') && storageHandler) {
+        calls.push({ name: `STORAGE:${request.method()}`, body: { path: url.pathname } })
+        return storageHandler(route)
+      }
       if (url.origin === 'https://booking-test.invalid' && ['GET', 'HEAD'].includes(request.method())) {
         const table = url.pathname.replace('/rest/v1/', '')
         const read = reads.get(table)
@@ -62,7 +69,7 @@ export const test = base.extend<{ api: TestApi }>({
           return read(route, url.searchParams)
         }
       }
-      if (url.origin === 'https://booking-test.invalid' && request.method() === 'POST' && url.pathname.startsWith('/auth/v1/')) {
+      if (url.origin === 'https://booking-test.invalid' && ['GET', 'PUT', 'POST'].includes(request.method()) && url.pathname.startsWith('/auth/v1/')) {
         const endpoint = url.pathname.slice('/auth/v1/'.length)
         const handler = authHandlers.get(endpoint)
         if (handler) {
@@ -88,6 +95,7 @@ export const test = base.extend<{ api: TestApi }>({
       else { unexpected.push('Unexpected external WebSocket'); socket.close() }
     })
     await use({ calls, on: (name, handler) => handlers.set(name, handler),
+      onStorage: (handler) => { storageHandler = handler },
       onAuth: (endpoint, handler) => { authenticated = true; authHandlers.set(endpoint, handler) },
       onGet: (table, handler) => reads.set(table, handler),
       signIn: async (userId) => {

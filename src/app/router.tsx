@@ -73,7 +73,10 @@ const ReservationsPage = lazy(() =>
 );
 
 const CustomerBookingPage = lazy(() => import('../features/booking/customer-booking-page').then((module) => ({ default: module.CustomerBookingPage })))
-const CalendarCallbackPage = lazy(() => import('../features/calendar/calendar-callback-page').then((module) => ({ default: module.CalendarCallbackPage })))
+// Google Calendar temporariamente desativado para o lançamento. Reativar após configurar OAuth.
+// const CalendarCallbackPage = lazy(() => import('../features/calendar/calendar-callback-page').then((module) => ({ default: module.CalendarCallbackPage })))
+const InsightsPage = lazy(() => import('../features/insights/insights-page').then((module) => ({ default: module.InsightsPage })))
+const ProfilePage = lazy(() => import('../features/profile/profile-page').then((module) => ({ default: module.ProfilePage })))
 
 export function AppRouter() {
   return (
@@ -83,18 +86,22 @@ export function AppRouter() {
         <Route path="project" element={<ProjectPage />} />
         <Route path="book/:slug" element={<PublicBookingPage />} />
         <Route path="booking/manage/:bookingId" element={<CustomerBookingPage />} />
+        {/* Google Calendar temporariamente desativado.
         <Route path="calendar/callback" element={<CalendarCallbackPage />} />
+        */}
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
         <Route path="reset-password" element={<ResetPasswordPage />} />
         <Route path="auth/callback" element={<AuthCallbackPage />} />
         <Route element={<ProtectedRoute />}>
+          <Route path="account" element={<ProfilePage />} />
           <Route path="dashboard" element={<BusinessesPage />} />
           <Route path="onboarding" element={<CreateBusinessPage />} />
           <Route element={<BusinessLayout />}>
           <Route path="dashboard/:businessId" element={<BusinessPage />} />
           <Route path="dashboard/:businessId/reservations" element={<ReservationsPage />} />
+          <Route path="dashboard/:businessId/insights" element={<InsightsPage />} />
           <Route path="dashboard/:businessId/availability" element={<AvailabilityPage />} />
           <Route path="dashboard/:businessId/employees" element={<EmployeesPage />} />
           <Route path="dashboard/:businessId/employees/:employeeId/schedule" element={<SchedulePage />} />

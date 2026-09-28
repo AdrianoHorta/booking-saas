@@ -1,8 +1,11 @@
 # Fecho do MVP e publicação
 
-Revisão: 24 de setembro de 2026. Objetivo proposto: publicar o MVP de portefólio
-com reservas e demonstração. Sincronização Google, notificações e analytics
-continuam no roadmap; não são funcionalidades concluídas desta versão.
+Atualização de 24 de setembro de 2026: o utilizador confirmou que Vercel e Supabase
+já estão configurados e os percursos existentes foram testados na app publicada.
+A prioridade passou para integrações e indicadores, com design no fim.
+O código da [fase 13](phase-13-integrations.md) está implementado e o backend
+publicado no Supabase ligado, com cron ativo; falta ativar fornecedores e atualizar o frontend.
+As listas de publicação abaixo servem de referência, não de pedido para refazer o deploy inicial.
 
 ## Implementado
 
@@ -60,10 +63,10 @@ há envio automático por email da confirmação, cancelamento ou reagendamento.
 | Item | O que falta |
 | --- | --- |
 | Google Calendar A | Configurar OAuth e os quatro segredos; testar ligação, escolha de calendário e revogação com conta real. |
-| Google Calendar B/C | Outbox, worker, retries e criação/alteração/cancelamento idempotentes de eventos. |
+| Google Calendar B/C | Código e cron publicados; configurar OAuth e validar conta real. |
 | Google Calendar D | Ler períodos ocupados e integrá-los na disponibilidade; etapa posterior. |
-| Notificações | Escolher/configurar fornecedor e implementar envios e retries no servidor. SMTP do Auth não envia emails de reservas. |
-| Analytics | Definir indicadores e implementar consultas/interface. O resumo atual não é um módulo de analytics. |
+| Notificações | Resend implementado e cron ativo; configurar domínio/key e origem da app. Ativar por empresa e validar email real. |
+| Analytics | Indicadores implementados e testados; publicar a atualização frontend na Vercel. |
 | Testes adicionais | Realtime durante formulários e OAuth/SMTP reais; Safari/Firefox e dispositivos físicos ainda sem cobertura. |
 
 Detalhes Google: [fase A](phase-12a.md) e [arquitetura](google-calendar-architecture.md).
@@ -88,15 +91,13 @@ nunca a uma base com dados reais. O workflow CI não chama estes comandos.
 
 ## Validação desta revisão
 
-- Vitest: 255 testes aprovados.
+- Vitest: 277 testes aprovados.
 - Build TypeScript/Vite e lint: aprovados.
-- Playwright: os 64 cenários passaram entre a execução geral (62 aprovados) e
-  repetições dirigidas após corrigir dois testes: navegação para terminar sessão
-  e identificação dos bundles da demo. O relatório local contém a última execução
-  dirigida, não uma nova execução geral dos 64 testes.
-- SQL: 647 testes aprovados na etapa anterior; não repetidos nesta revisão,
-  que não altera migrations nem regras da base de dados.
-- Cloud, SMTP, OAuth e publicação: não verificados nesta revisão.
+- Playwright: 70 testes aprovados numa execução geral, com APIs simuladas.
+- SQL: 683 testes aprovados com as migrations novas em transações com rollback;
+  36 testes da integração repetidos após aplicar o esquema.
+- Deno: duas Edge Functions verificadas e publicadas; cron ativo. OAuth/Resend
+  ainda não configurados na última verificação; nenhum email ou evento real enviado nos testes.
 
 Comandos: `npm run lint`, `npm test`, `npm run build`, `npm run test:e2e`.
 A primeira execução Playwright precisa de `npx playwright install chromium`.

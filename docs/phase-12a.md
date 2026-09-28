@@ -1,5 +1,10 @@
 # Fase 12.x A — Ligação Google Calendar por colaborador
 
+Atualização: a [fase 13](phase-13-integrations.md) acrescenta sincronização de
+eventos. A configuração atual exige também o scope
+`https://www.googleapis.com/auth/calendar.events`. As descrições abaixo de
+“apenas leitura” referem-se à primeira implementação desta fase.
+
 ## OBJECTIVE
 
 Cada colaborador associado a uma conta pode autorizar o Google e escolher um
@@ -123,8 +128,9 @@ Depois da configuração abaixo:
 
 1. No Google Cloud, criar/escolher um projeto e ativar **Google Calendar API**.
 2. Em Google Auth Platform, configurar branding, audiência e utilizadores de
-   teste. Adicionar a conta Google com que vais testar. Configurar os dois scopes
-   indicados acima. Ver [consentimento e scopes](https://developers.google.com/workspace/guides/configure-oauth-consent).
+   teste. Adicionar a conta Google com que vais testar. Configurar `openid`,
+   `https://www.googleapis.com/auth/calendar.calendarlist.readonly` e
+   `https://www.googleapis.com/auth/calendar.events`. Ver [consentimento e scopes](https://developers.google.com/workspace/guides/configure-oauth-consent).
 3. Criar um cliente OAuth do tipo **Web application**. Adicionar como redirect:
    `http://localhost:5173/calendar/callback`. Se usares outro porto ou o site
    Vercel, adicionar também o endereço exato dessa origem seguido de
@@ -133,7 +139,8 @@ Depois da configuração abaixo:
 4. Copiar `supabase/functions/.env.example` para `.env.calendar.local` e preencher
    client ID e client secret. Este ficheiro está ignorado pelo Git. Configurar
    `CALENDAR_APP_ORIGINS` com origens exatas, sem barra final, separadas por vírgula.
-5. Gerar a chave uma vez no terminal local e colocar o resultado em
+5. A chave já foi instalada no projeto ligado durante o diagnóstico localhost.
+   Preservar esse valor. Apenas num projeto sem chave, gerar uma vez e colocar o resultado em
    `CALENDAR_ENCRYPTION_KEY` (não enviar na conversa):
 
    ```powershell

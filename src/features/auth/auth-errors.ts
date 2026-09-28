@@ -11,6 +11,10 @@ const messages: Record<string, string> = {
   signup_disabled: 'O registo está temporariamente indisponível.',
   session_not_found: 'A sessão expirou. Entre novamente ou peça um novo link.',
   otp_expired: 'O link expirou ou já foi utilizado. Peça um novo link.',
+  email_exists: 'Não foi possível usar este email. Escolha outro endereço.',
+  reauthentication_needed: 'Confirme a alteração com um código enviado para o seu email.',
+  reauthentication_not_valid: 'O código de confirmação não é válido ou expirou. Peça um novo código.',
+  invalid_current_password: 'A password atual não está correta.',
 }
 
 export function getAuthErrorMessage(error: unknown) {

@@ -4,7 +4,7 @@ import { businessIdSchema } from '../schemas/business-schema'
 import type { BusinessSummary } from '../business.types'
 import type { BusinessFormValues } from '../schemas/business-schema'
 
-const membershipSelection = 'role,business:businesses!inner(id,name,slug,timezone,is_active,public_booking_enabled,cancellation_notice_hours)' as const
+const membershipSelection = 'role,business:businesses!inner(id,name,slug,timezone,is_active,public_booking_enabled,cancellation_notice_hours,logo_path,description,phone,email,address)' as const
 
 export async function setPublicBookingEnabled(input: { businessId: string; enabled: boolean }) {
   const request = z.object({ businessId: businessIdSchema, enabled: z.boolean() }).parse(input)

@@ -190,3 +190,7 @@ nos dois formatos após corrigir a navegação do teste. O teste de isolamento d
 demo foi adaptado aos nomes dos bundles de produção e passou nos dois formatos
 numa repetição dirigida. Não foi executada uma nova suite geral após esses ajustes.
 A configuração e validação real do Google continuam pendentes até haver disponibilidade.
+
+Na [fase 13](phase-13-integrations.md), a suite passou integralmente com 70 testes:
+mais seis execuções para indicadores, ativação de emails, limites de permissão,
+erros e acessibilidade. Google/Resend e o worker real não são acionados por estes testes.

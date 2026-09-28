@@ -8,7 +8,7 @@ export function isBookingQuery(key: QueryKey, businessId: string, userId: string
     return key[1] === userId && typeof filters === 'object' && filters !== null &&
       'businessId' in filters && filters.businessId === businessId
   }
-  if (key[0] === 'reservation-summary') return key[1] === userId && key[2] === businessId
+  if (key[0] === 'reservation-summary' || key[0] === 'booking-analytics' || key[0] === 'booking-integrations') return key[1] === userId && key[2] === businessId
   return (key[0] === 'availability' || key[0] === 'reschedule-slots') && key[1] === businessId
 }
 

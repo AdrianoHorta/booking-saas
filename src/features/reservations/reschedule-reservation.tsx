@@ -40,7 +40,7 @@ function RescheduleEditor({ businessId, bookingId, startsAt, timezone, onClose }
           <option value="">Escolha um horário</option>{query.data.slots.map((slot) => <option key={slot.starts_at} value={slot.starts_at}>{format(slot.starts_at)}</option>)}
         </select></label> : <Message>Não existem vagas nesta data.</Message>}
     </div>}
-    <p className="my-4 text-sm text-muted">Confirme a alteração com o cliente. Não é enviada notificação automática.</p>
+    <p className="my-4 text-sm text-muted">Confirme a alteração com o cliente. Se os emails estiverem ativos, será pedido o envio do novo horário.</p>
     {mutation.isError && <Message error>{mutation.error.message}</Message>}
     {changed && !pending && <Message error>A reserva foi alterada entretanto. Feche esta janela e atualize a lista.</Message>}
     <div className="mt-5 flex flex-wrap gap-3"><Button disabled={mutation.isPending || (!pending && (!validSelection || changed || query.isFetching || query.isError))} onClick={() => {

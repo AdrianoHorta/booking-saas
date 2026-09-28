@@ -28,7 +28,8 @@ export function CalendarSettings({ businessId }: { businessId: string }) {
   } })
   return <section className="space-y-4 rounded-sm border border-line bg-surface p-5" aria-label="Google Calendar">
     <h2 className="font-display text-3xl">O meu Google Calendar</h2>
-    <p className="text-sm text-muted">Ligue a sua conta e escolha um calendário. A sincronização automática das reservas será disponibilizada numa próxima etapa.</p>
+    <p className="text-sm text-muted">Ligue a sua conta e escolha um calendário para sincronizar reservas, reagendamentos e cancelamentos. A sincronização é processada em segundo plano.</p>
+    <p className="text-sm text-muted">Ao mudar de calendário ou desligar, os eventos do calendário anterior são mantidos e deixam de ser atualizados. Os eventos externos do Google ainda não bloqueiam vagas na aplicação.</p>
     {connection.isPending ? <Message>A consultar ligação…</Message> : connection.isError ? <><Message error>{connection.error.message}</Message><Button onClick={() => void connection.refetch()}>Tentar novamente</Button></>
       : !connection.data ? <Message>Para ligar um calendário, a sua conta tem de estar associada a um colaborador ativo desta empresa.</Message> : <>
         <p>Profissional: <strong>{connection.data.employee_name}</strong></p>
@@ -41,7 +42,7 @@ export function CalendarSettings({ businessId }: { businessId: string }) {
                 <option value="">Escolha um calendário</option>{calendars.data.map((calendar) => <option key={calendar.id} value={calendar.id}>{calendar.summary}</option>)}
               </select></label><Button disabled={!selected || action.isPending} onClick={() => action.mutate('select')}>Guardar calendário</Button>
             </div> : <Message>Não existem calendários em que possa criar eventos.</Message>}
-          {confirmDisconnect ? <div className="space-y-3"><p>Desligar a conta Google? Esta ação não altera as reservas da aplicação.</p>
+          {confirmDisconnect ? <div className="space-y-3"><p>Desligar a conta Google? As reservas da aplicação e os eventos já criados são mantidos. A sincronização para.</p>
             <Button disabled={action.isPending} onClick={() => action.mutate('disconnect')}>Confirmar desconexão</Button>{' '}
             <Button disabled={action.isPending} onClick={() => setConfirmDisconnect(false)}>Manter ligação</Button></div>
             : <Button disabled={action.isPending} onClick={() => setConfirmDisconnect(true)}>Desligar Google Calendar</Button>}

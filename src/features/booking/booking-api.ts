@@ -2,9 +2,9 @@ import { z } from 'zod'
 import { getSupabase } from '../../lib/supabase/client'
 
 const slugSchema = z.string().min(3).max(63).regex(/^[a-z0-9]+(-[a-z0-9]+)*$/)
-const employeeSchema = z.object({ id: z.uuid(), name: z.string().min(1) })
+const employeeSchema = z.object({ id: z.uuid(), name: z.string().min(1), avatar_path: z.string().nullable().optional() })
 const catalogSchema = z.object({
-  business: z.object({ name: z.string().min(1), slug: slugSchema, timezone: z.string().min(1), cancellation_notice_hours: z.number().int().nonnegative() }),
+  business: z.object({ name: z.string().min(1), slug: slugSchema, timezone: z.string().min(1), cancellation_notice_hours: z.number().int().nonnegative(), logo_path: z.string().nullable().optional() }),
   services: z.array(z.object({ id: z.uuid(), name: z.string().min(1), duration_minutes: z.number().int().min(1).max(44640),
     price_cents: z.number().int().nonnegative(), currency: z.literal('EUR'), employees: z.array(employeeSchema).min(1) })),
 })

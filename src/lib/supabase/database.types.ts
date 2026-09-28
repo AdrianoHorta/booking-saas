@@ -14,6 +14,12 @@ export type Database = {
   }
   public: {
     Tables: {
+      user_profiles: {
+        Row: { user_id: string; full_name: string; avatar_path: string | null; updated_at: string }
+        Insert: { user_id: string; full_name?: string; avatar_path?: string | null; updated_at?: string }
+        Update: { user_id?: string; full_name?: string; avatar_path?: string | null; updated_at?: string }
+        Relationships: []
+      }
       booking_revisions: {
         Row: {
           business_id: string
@@ -179,6 +185,7 @@ export type Database = {
       businesses: {
         Row: {
           address: string | null
+          booking_emails_enabled: boolean
           cancellation_notice_hours: number
           created_at: string
           currency: string
@@ -197,6 +204,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          booking_emails_enabled?: boolean
           cancellation_notice_hours?: number
           created_at?: string
           currency?: string
@@ -215,6 +223,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          booking_emails_enabled?: boolean
           cancellation_notice_hours?: number
           created_at?: string
           currency?: string
@@ -321,6 +330,7 @@ export type Database = {
           employee_id: string
           state_expires_at: string | null
           state_hash: string | null
+          sync_generation: string
           user_id: string
           version: string
         }
@@ -332,6 +342,7 @@ export type Database = {
           employee_id: string
           state_expires_at?: string | null
           state_hash?: string | null
+          sync_generation?: string
           user_id: string
           version?: string
         }
@@ -343,6 +354,7 @@ export type Database = {
           employee_id?: string
           state_expires_at?: string | null
           state_hash?: string | null
+          sync_generation?: string
           user_id?: string
           version?: string
         }
@@ -527,6 +539,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_my_profile: { Args: Record<PropertyKey, never>; Returns: Json }
+      save_my_profile: { Args: { profile_name: string }; Returns: Json }
+      set_my_avatar: { Args: { image_path: string | null }; Returns: Json }
+      save_business_details: { Args: { target_business_id: string; business_name: string; business_description: string; business_phone: string; business_email: string; business_address: string }; Returns: undefined }
+      set_business_logo: { Args: { target_business_id: string; image_path: string | null }; Returns: undefined }
+
+      booking_analytics: {
+        Args: { date_from: string; date_to: string; target_business_id: string }
+        Returns: Json
+      }
+      booking_integration_status: {
+        Args: { target_business_id: string }
+        Returns: Json
+      }
       calendar_connection_backend: {
         Args: {
           action: string
@@ -548,6 +574,7 @@ export type Database = {
         Args: { cancellation_token: string; target_booking_id: string }
         Returns: Json
       }
+      claim_booking_delivery: { Args: { channels: string[] }; Returns: Json }
       confirm_booking: {
         Args: {
           business_slug: string
@@ -568,6 +595,15 @@ export type Database = {
           business_timezone?: string
         }
         Returns: string
+      }
+      finish_booking_delivery: {
+        Args: {
+          delivery_id: number
+          failure_code?: string
+          lease_id: string
+          outcome: string
+        }
+        Returns: boolean
       }
       get_availability_context: {
         Args: {
@@ -611,6 +647,10 @@ export type Database = {
           user_id: string
         }[]
       }
+      prepare_booking_delivery: {
+        Args: { delivery_id: number; lease_id: string }
+        Returns: Json
+      }
       remove_business_member: {
         Args: { target_business_id: string; target_user_id: string }
         Returns: undefined
@@ -649,6 +689,10 @@ export type Database = {
           target_employee_id: string
         }
         Returns: undefined
+      }
+      set_booking_emails_enabled: {
+        Args: { enabled: boolean; target_business_id: string }
+        Returns: boolean
       }
       set_cancellation_policy: {
         Args: { notice_hours: number; target_business_id: string }

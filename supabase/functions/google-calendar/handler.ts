@@ -1,5 +1,5 @@
 import type { SupabaseClient } from 'npm:@supabase/supabase-js@2.116.0'
-import { hash, randomState, scope, seal, unseal } from './crypto.ts'
+import { eventScope, hash, randomState, scope, seal, unseal } from './crypto.ts'
 
 export function createCalendarHandler(readEnv: (name: string) => string | undefined, createClient: (url: string, key: string, options: { auth: { persistSession: boolean; autoRefreshToken: boolean } }) => SupabaseClient) {
 const env = (name: string) => { const value = readEnv(name); if (!value) throw new Error('configuration'); return value }
@@ -74,7 +74,8 @@ return async (request: Request) => {
       if (typeof body.state !== 'string' || !/^[a-f0-9]{64}$/.test(body.state) || typeof body.code !== 'string' || body.code.length > 4096) throw new Error('authorization')
       const connection = await db('consume', { state_hash: await stateHash(body.state) })
       const credentials = await token({ grant_type: 'authorization_code', code: body.code, redirect_uri: redirectUri })
-      if (!String(credentials.scope ?? '').split(' ').includes('https://www.googleapis.com/auth/calendar.calendarlist.readonly')) throw new Error('reconnect')
+      const granted = String(credentials.scope ?? '').split(' ')
+      if (!granted.includes('https://www.googleapis.com/auth/calendar.calendarlist.readonly') || !granted.includes(eventScope)) throw new Error('reconnect')
       const identity = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
         headers: { Authorization: `Bearer ${credentials.access_token}` }, signal: AbortSignal.timeout(15_000),
       })
@@ -82,9 +83,9 @@ return async (request: Request) => {
       const account = (await identity.json()).sub
       if (typeof account !== 'string') throw new Error('provider')
       const previous = connection.credentials ? await unseal(connection.credentials, encryptionKey) : null
-      const refreshToken = credentials.refresh_token ?? (previous?.account === account ? previous.refreshToken : null)
+      const refreshToken = credentials.refresh_token ?? (previous?.account === account && previous.canWriteEvents === true ? previous.refreshToken : null)
       if (!refreshToken) throw new Error('reconnect')
-      await db('save', { version: connection.version, credentials: await seal({ refreshToken, account }, encryptionKey) })
+      await db('save', { version: connection.version, credentials: await seal({ refreshToken, account, canWriteEvents: true }, encryptionKey) })
       return response({ connected: true })
     }
     const connection = await db('read')

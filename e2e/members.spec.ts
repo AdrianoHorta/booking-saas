@@ -1,11 +1,12 @@
 import type { Page } from '@playwright/test'
+import { auditAccessibility } from './accessibility'
 import { test, expect, syntheticSession, type TestApi } from './fixtures'
 
 const businessId = '71000000-0000-4000-8000-000000000001'
 const ownerId = '72000000-0000-4000-8000-000000000001'
 const workerId = '72000000-0000-4000-8000-000000000002'
 const adminId = '72000000-0000-4000-8000-000000000003'
-const path = `/dashboard/${businessId}`
+const path = `/dashboard/${businessId}?view=settings`
 type Role = 'owner' | 'admin' | 'employee'
 type Member = { user_id: string; email: string; role: Role }
 const business = { id: businessId, name: 'Empresa da equipa', slug: 'equipa-teste', timezone: 'Europe/Lisbon',
@@ -34,6 +35,24 @@ async function setup(page: Page, api: TestApi, role: Role = 'owner') {
   })
   return state
 }
+
+test('dashboard organiza acessos em cartões e separa as definições', async ({ page, api }, info) => {
+  await setup(page, api)
+  await page.goto(`/dashboard/${businessId}`)
+  await expect(page.getByRole('heading', { name: 'O seu espaço de trabalho' })).toBeVisible()
+  await expect(page.getByRole('link', { name: /Agenda e reservas/ })).toBeVisible()
+  await expect(page.getByRole('region', { name: 'Acesso à empresa' })).toHaveCount(0)
+  await expect(page.getByText('Não há próximas marcações confirmadas neste período.')).toBeVisible()
+  await page.screenshot({ path: info.outputPath('dashboard-overview.png'), fullPage: true })
+  await auditAccessibility(page, info)
+  await page.getByRole('link', { name: 'Definições', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'A sua empresa' })).toBeVisible()
+  await expect(page.getByRole('region', { name: 'Acesso à empresa' })).toBeVisible()
+  await page.screenshot({ path: info.outputPath('dashboard-settings.png'), fullPage: true })
+  await auditAccessibility(page, info)
+  await page.reload()
+  await expect(page.getByRole('link', { name: 'Definições', exact: true })).toHaveAttribute('aria-current', 'page')
+})
 
 test('proprietário adiciona conta, altera papel e confirma a retirada de acesso', async ({ page, api }) => {
   const state = await setup(page, api)
@@ -67,9 +86,10 @@ test('proprietário adiciona conta, altera papel e confirma a retirada de acesso
   await expect(section.getByText('Acesso retirado. O profissional e as reservas foram mantidos.')).toBeVisible()
   await page.reload()
   await expect(section.getByText('owner@example.test', { exact: true })).toBeVisible()
-  await expect(page.getByText('Não há próximas marcações confirmadas neste período.')).toBeVisible()
   await expect(section.getByText('worker@example.test', { exact: true })).toHaveCount(0)
   expect(api.calls.filter((call) => call.name === 'remove_business_member')).toHaveLength(1)
+  await page.getByRole('link', { name: 'Visão geral', exact: true }).click()
+  await expect(page.getByText('Não há próximas marcações confirmadas neste período.')).toBeVisible()
 })
 
 test('email sem conta registada mostra erro sem adicionar um membro fictício', async ({ page, api }) => {
